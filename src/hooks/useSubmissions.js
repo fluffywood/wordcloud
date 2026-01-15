@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
-import toast from 'react-hot-toast'
 
 /**
  * Custom hook for managing submissions data and real-time updates
@@ -24,7 +23,6 @@ export function useSubmissions() {
         setSubmissions(data || [])
       } catch (error) {
         console.error('Error fetching submissions:', error)
-        toast.error('Failed to load submissions')
       } finally {
         setLoading(false)
       }

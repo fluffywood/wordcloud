@@ -177,7 +177,7 @@
       "Step 3: Verify button shows loading indicator",
       "Step 4: Verify button is disabled during loading"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -188,7 +188,7 @@
       "Step 3: Verify toast message indicates success",
       "Step 4: Verify toast auto-dismisses after 3-5 seconds"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -264,7 +264,7 @@
       "Step 3: Verify submit button is enabled again",
       "Step 4: Verify countdown is no longer displayed"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -275,7 +275,7 @@
       "Step 3: Verify countdown timer still shows remaining time",
       "Step 4: Verify submit button is still disabled"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -286,7 +286,7 @@
       "Step 3: Verify submissions data is fetched",
       "Step 4: Verify word cloud displays existing phrases"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",

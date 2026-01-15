@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useCallback } from 'react'
 import Header from './components/Header'
 import SubmissionForm from './components/SubmissionForm'
 import WordCloudVisualization from './components/WordCloudVisualization'
 import StatsDashboard from './components/StatsDashboard'
 import Footer from './components/Footer'
+import { toast } from './components/CustomToast'
 import { useSession } from './hooks/useSession'
 import { useSubmissions } from './hooks/useSubmissions'
 import { useVotes } from './hooks/useVotes'
@@ -16,6 +17,19 @@ function App() {
   const { phrases, topPhrases, loading: phrasesLoading } = usePhrases(submissions, votes)
 
   const loading = submissionsLoading || votesLoading || phrasesLoading
+
+  // Wrap voteForPhrase to add toast notifications
+  const handleVote = useCallback(async (phraseText) => {
+    const result = await voteForPhrase(phraseText)
+    if (result.success) {
+      toast.success('Vote recorded!')
+    } else if (result.error === 'Already voted') {
+      toast.error('You already voted for this!')
+    } else {
+      toast.error('Failed to record vote')
+    }
+    return result
+  }, [voteForPhrase])
 
   return (
     <div className="min-h-screen bg-page-bg text-text-primary">
@@ -44,7 +58,7 @@ function App() {
             <WordCloudVisualization
               phrases={phrases}
               votedPhrases={votedPhrases}
-              onVote={voteForPhrase}
+              onVote={handleVote}
               hasVoted={hasVoted}
               loading={loading}
             />

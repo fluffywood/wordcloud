@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { getVotedPhrases, addVotedPhrase, hasVotedForPhrase } from '../utils/localStorage'
-import toast from 'react-hot-toast'
 
 /**
  * Custom hook for managing votes data and real-time updates
@@ -29,7 +28,6 @@ export function useVotes(sessionId) {
         setVotes(data || [])
       } catch (error) {
         console.error('Error fetching votes:', error)
-        toast.error('Failed to load votes')
       } finally {
         setLoading(false)
       }
@@ -76,12 +74,10 @@ export function useVotes(sessionId) {
   const voteForPhrase = useCallback(async (phraseText) => {
     // Check localStorage first for instant feedback
     if (hasVotedForPhrase(phraseText)) {
-      toast.error('You already voted for this!')
       return { success: false, error: 'Already voted' }
     }
 
     if (!sessionId) {
-      toast.error('Session not initialized')
       return { success: false, error: 'No session' }
     }
 
@@ -103,7 +99,6 @@ export function useVotes(sessionId) {
           // Update localStorage to be in sync
           addVotedPhrase(phraseText)
           setVotedPhrases(prev => [...prev, phraseText])
-          toast.error('You already voted for this!')
           return { success: false, error: 'Already voted' }
         }
         throw error
@@ -112,12 +107,10 @@ export function useVotes(sessionId) {
       // Update localStorage and state
       addVotedPhrase(phraseText)
       setVotedPhrases(prev => [...prev, phraseText])
-      toast.success('Vote recorded!')
 
       return { success: true, data }
     } catch (error) {
       console.error('Error voting:', error)
-      toast.error('Failed to record vote')
       return { success: false, error: error.message }
     }
   }, [sessionId])

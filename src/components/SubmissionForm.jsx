@@ -1,5 +1,4 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
-import toast from 'react-hot-toast'
 import RateLimitCountdown from './RateLimitCountdown'
 import { containsProfanity, getProfanityErrorMessage } from '../lib/profanityFilter'
 import { canSubmit, recordSubmission } from '../utils/rateLimiting'
@@ -15,6 +14,7 @@ export default function SubmissionForm({ sessionId, onSubmit }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isRateLimited, setIsRateLimited] = useState(!canSubmit())
   const [error, setError] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
   const textareaRef = useRef(null)
 
   // Auto-focus on mount
@@ -26,6 +26,16 @@ export default function SubmissionForm({ sessionId, onSubmit }) {
   useEffect(() => {
     setIsRateLimited(!canSubmit())
   }, [])
+
+  // Auto-hide success message after 5 seconds
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => {
+        setSuccessMessage('')
+      }, 5000)
+      return () => clearTimeout(timer)
+    }
+  }, [successMessage])
 
   const handleRateLimitExpire = useCallback(() => {
     setIsRateLimited(false)
@@ -60,11 +70,16 @@ export default function SubmissionForm({ sessionId, onSubmit }) {
     if (value.length <= MAX_CHARS) {
       setText(value)
       setError('') // Clear error on change
+      setSuccessMessage('') // Clear success message on change
     }
   }, [])
 
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault()
+
+    // Clear previous messages
+    setSuccessMessage('')
+    setError('')
 
     // Validate
     const validationError = validate(text)
@@ -76,27 +91,26 @@ export default function SubmissionForm({ sessionId, onSubmit }) {
     // Check rate limit
     if (!canSubmit()) {
       setIsRateLimited(true)
-      toast.error('Please wait before submitting again')
+      setError('Please wait before submitting again')
       return
     }
 
     setIsSubmitting(true)
-    setError('')
 
     try {
       const result = await onSubmit(text, sessionId)
 
       if (result.success) {
-        toast.success('Idea submitted!')
+        setSuccessMessage('Idea submitted successfully!')
         setText('')
         recordSubmission()
         setIsRateLimited(true)
         textareaRef.current?.focus()
       } else {
-        toast.error(result.error || 'Failed to submit idea')
+        setError(result.error || 'Failed to submit idea')
       }
     } catch (err) {
-      toast.error('Something went wrong')
+      setError('Something went wrong')
       console.error(err)
     } finally {
       setIsSubmitting(false)
@@ -155,6 +169,23 @@ export default function SubmissionForm({ sessionId, onSubmit }) {
             {charCount}/{MAX_CHARS}
           </div>
         </div>
+
+        {/* Success message */}
+        {successMessage && (
+          <p
+            className="text-sm text-success flex items-center gap-2"
+            role="status"
+          >
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fillRule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clipRule="evenodd"
+              />
+            </svg>
+            {successMessage}
+          </p>
+        )}
 
         {/* Error message */}
         {error && (
