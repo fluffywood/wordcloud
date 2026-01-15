@@ -317,7 +317,7 @@
       "Step 1: Submit 'AI coding assistant'",
       "Step 2: Verify phrase extraction includes single words: 'ai', 'coding', 'assistant'"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -326,7 +326,7 @@
       "Step 1: Submit 'AI coding assistant'",
       "Step 2: Verify extraction includes 2-grams: 'ai coding', 'coding assistant'"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -335,7 +335,7 @@
       "Step 1: Submit 'AI coding assistant helper'",
       "Step 2: Verify extraction includes 3-grams like 'ai coding assistant'"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -354,7 +354,7 @@
       "Step 1: Submit 'AI CODING Assistant'",
       "Step 2: Verify extracted phrases are lowercase: 'ai', 'coding', 'assistant'"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -403,7 +403,7 @@
       "Step 2: Verify higher-scored phrases have larger font size",
       "Step 3: Verify lower-scored phrases have smaller font size"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -413,7 +413,7 @@
       "Step 2: Submit new text with unique words",
       "Step 3: Verify word cloud updates to include new phrases"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -454,7 +454,7 @@
       "Step 3: Submit same word again or vote on it",
       "Step 4: Verify it now appears (score >= 2)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
