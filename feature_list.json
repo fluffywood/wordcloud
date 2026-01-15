@@ -81,7 +81,7 @@
       "Step 1: Navigate to application",
       "Step 2: Verify textarea has focus without clicking"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -102,7 +102,7 @@
       "Step 2: Verify counter changes to red/warning color",
       "Step 3: Verify visual indication of approaching limit"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -144,7 +144,7 @@
       "Step 2: Click submit button",
       "Step 3: Verify submission is blocked with validation message"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -221,7 +221,7 @@
       "Step 2: Click submit button",
       "Step 3: Verify submission is blocked regardless of case"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1791,7 +1791,7 @@
       "Step 2: Verify error appears near textarea",
       "Step 3: Verify error text is red"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
