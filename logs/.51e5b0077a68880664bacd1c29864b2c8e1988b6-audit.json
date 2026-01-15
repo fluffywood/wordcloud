@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "C:\\Users\\colem\\OpenSource\\claude-quickstarts\\autonomous-coding\\generations\\coding_challenge_word_cloud\\logs\\.51e5b0077a68880664bacd1c29864b2c8e1988b6-audit.json",
+    "files": [
+        {
+            "date": 1768515552015,
+            "name": "C:\\Users\\colem\\OpenSource\\claude-quickstarts\\autonomous-coding\\generations\\coding_challenge_word_cloud\\logs\\mcp-puppeteer-2026-01-15.log",
+            "hash": "b8c5c8745c3b4af5c9a34f95eea7a5ed581b586e38d0bffb609bba2d78da916e"
+        }
+    ],
+    "hashType": "sha256"
+}

@@ -1,0 +1,1233 @@
+<project_specification>
+  <project_name>Live Stream Word Cloud - Audience-Driven Project Voting</project_name>
+
+  <overview>
+    Build a real-time, collaborative word cloud application for live stream audiences to submit and vote on
+    project ideas. The app allows anonymous users to submit text describing what they want built, automatically
+    extracts meaningful phrases, and visualizes them in an interactive word cloud. Users can upvote phrases by
+    clicking them, creating a democratic way to reach consensus on what to build during the live stream.
+
+    The application prioritizes simplicity and real-time collaboration, with no authentication required - just
+    visit the site, submit ideas, and vote. Perfect for engaging a YouTube live stream audience in deciding
+    what coding challenge to tackle.
+  </overview>
+
+  <development_methodology>
+    🚨 CRITICAL: CONTINUOUS PUPPETEER VALIDATION 🚨
+
+    You MUST use the Puppeteer MCP server for validation THROUGHOUT the development process,
+    not just at the end. This is a CORE requirement of this project.
+
+    VALIDATION APPROACH:
+    - After EVERY major implementation step, use Puppeteer to validate what you just built
+    - Launch the dev server (npm run dev) and navigate to http://localhost:5173
+    - Take screenshots to verify visual appearance
+    - Test interactions (clicks, form fills, etc.)
+    - Verify functionality works as expected
+    - Fix any issues IMMEDIATELY before moving to the next step
+
+    WHY THIS MATTERS:
+    - Catches bugs early when they're easy to fix
+    - Ensures each feature works before building the next one
+    - Provides visual evidence of progress
+    - Prevents cascading failures from broken foundations
+
+    PUPPETEER MCP TOOLS AVAILABLE:
+    - puppeteer_navigate: Navigate to URLs
+    - puppeteer_screenshot: Capture visual evidence
+    - puppeteer_click: Test interactive elements
+    - puppeteer_fill: Test form inputs
+    - puppeteer_hover: Test hover states
+    - puppeteer_evaluate: Run JavaScript in browser context to verify state
+
+    Each implementation step includes specific Puppeteer validation checkpoints.
+    DO NOT SKIP THESE VALIDATIONS - they are mandatory.
+  </development_methodology>
+
+  <technology_stack>
+    <frontend>
+      <framework>React with Vite</framework>
+      <styling>Tailwind CSS (via CDN or PostCSS)</styling>
+      <state_management>React hooks (useState, useEffect, useContext)</state_management>
+      <word_cloud_library>react-wordcloud or react-d3-cloud</word_cloud_library>
+      <realtime>Supabase real-time subscriptions</realtime>
+      <session_tracking>localStorage with UUID v4</session_tracking>
+      <text_processing>Custom phrase extraction (1-3 word n-grams)</text_processing>
+      <port>Development port 5173 (Vite default)</port>
+    </frontend>
+
+    <backend>
+      <database>Supabase (PostgreSQL)</database>
+      <authentication>None - anonymous access only</authentication>
+      <access_control>NO Row Level Security (RLS) - fully public tables</access_control>
+      <realtime>Supabase real-time channels</realtime>
+    </backend>
+
+    <environment_variables>
+      <vite_env_file>.env file with Supabase credentials</vite_env_file>
+      <required_vars>
+        - VITE_SUPABASE_URL (your Supabase project URL)
+        - VITE_SUPABASE_ANON_KEY (public anonymous key)
+      </required_vars>
+    </environment_variables>
+  </technology_stack>
+
+  <prerequisites>
+    <directory_structure>
+      Expected directory structure:
+      ```
+      autonomous-coding/                    (repository root)
+      ├── tmp.md                            (Supabase credentials - READ FROM HERE)
+      └── generations/                      (projects directory)
+          └── [your-project-name]/          (this project - you are here)
+              ├── .env                       (CREATE THIS with values from ../../tmp.md)
+              ├── package.json
+              ├── src/
+              └── ...
+      ```
+
+      CRITICAL: The project is in generations/ subdirectory!
+
+      Key paths (from project root):
+      - tmp.md is at: ../../tmp.md (TWO directories up - through generations/ then autonomous-coding/)
+      - .env goes in: ./ (project root, same level as package.json)
+    </directory_structure>
+
+    <supabase_setup>
+      🎯 CRITICAL: DATABASE IS ALREADY FULLY SET UP! 🎯
+
+      - Supabase project is ALREADY CREATED - credentials available in ../../tmp.md
+      - Tables are ALREADY CREATED: submissions and phrase_votes exist in database
+      - Real-time is ALREADY ENABLED on both tables
+      - RLS is ALREADY DISABLED (tables are fully public)
+
+      YOU DO NOT NEED TO:
+      - Create a new Supabase project
+      - Run any SQL to create tables
+      - Enable Row Level Security
+      - Configure real-time (already done)
+
+      YOU ONLY NEED TO:
+      - Read credentials from ../../tmp.md
+      - Create .env file with SUPABASE_PROJECT_URL and SUPABASE_ANON_KEY
+      - Connect to Supabase from frontend using @supabase/supabase-js
+
+      Database credentials in ../../tmp.md:
+        * SUPABASE_POSTGRES_URL (for reference only - tables already created)
+        * SUPABASE_ANON_KEY (USE THIS in .env for frontend)
+        * SUPABASE_PROJECT_URL (USE THIS in .env for frontend)
+    </supabase_setup>
+
+    <local_setup>
+      - Node.js 18+ installed
+      - Create .env file with VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY from tmp.md
+      - Install dependencies with npm/pnpm
+      - Run dev server on port 5173
+    </local_setup>
+
+    <important_notes>
+      - Read credentials from tmp.md file at EXACT PATH: ../../tmp.md (two directories up from project root)
+      - Use SUPABASE_POSTGRES_URL to connect directly to Postgres and create tables
+      - Use SUPABASE_ANON_KEY and SUPABASE_PROJECT_URL in frontend .env file
+      - Create .env file at EXACT PATH: ./.env (in the project root directory, same level as package.json)
+      - NO authentication or RLS required - fully public anonymous access
+      - The tmp.md file contains all necessary Supabase credentials
+    </important_notes>
+
+    <file_locations>
+      - tmp.md: Located at ../../tmp.md (two levels up from project root)
+      - .env: Create in project root (same directory as package.json)
+      - If ../../tmp.md not found, search using glob pattern: **/tmp.md
+    </file_locations>
+  </prerequisites>
+
+  <core_features>
+    <submission_system>
+      - Single text input field for submitting ideas
+      - Character limit: 200 characters
+      - Rate limiting: One submission per 5 minutes per session
+      - Rate limit tracked in localStorage (session_id + timestamp)
+      - Clear countdown timer showing time until next submission allowed
+      - Visual feedback on successful submission
+      - Validation: No empty submissions, minimum 3 characters
+      - Auto-trim whitespace and normalize text
+      - Display recently submitted text in input field (grayed out) until rate limit expires
+
+      PROFANITY FILTER (Client-side):
+      - Implement basic profanity/swear word filter before submission
+      - Use a small, curated list of common inappropriate words
+      - Block submissions containing filtered words
+      - Show clear error message: "Please keep submissions appropriate for a public stream"
+      - Filter list should include common variations and bypass attempts (e.g., "f*ck", "fvck")
+      - Case-insensitive matching
+      - Do NOT submit to database if profanity detected
+      - Optional: Use bad-words npm package or similar lightweight library
+    </submission_system>
+
+    <phrase_extraction>
+      - Client-side processing using JavaScript
+      - Extract 1-word, 2-word, and 3-word phrases (n-grams)
+      - Convert to lowercase for matching
+      - Filter out common stop words (the, and, or, is, at, etc.)
+      - Remove punctuation except hyphens in compound words
+      - Minimum word length: 3 characters
+      - Example: "AI coding assistant" → ["ai", "coding", "assistant", "ai coding", "coding assistant", "ai coding assistant"]
+      - Process ALL submissions on each update to calculate phrase frequencies
+      - Combine mentions (from submissions) + votes (from phrase_votes) for total score
+    </phrase_extraction>
+
+    <word_cloud_visualization>
+      - Large, prominent word cloud taking center stage
+      - Font size based on total score (mentions + votes)
+      - Color gradient or scheme (e.g., blue to orange based on score)
+      - Smooth animations when new phrases appear or scores change
+      - Interactive: Hover shows exact count (e.g., "25 mentions, 12 votes")
+      - Click phrase to upvote (if not already voted)
+      - Visual indication of already-voted phrases (different color/opacity)
+      - Responsive layout: Scales on mobile, tablet, desktop
+      - Auto-refresh on real-time updates (new submissions or votes)
+      - Maximum phrases displayed: 100 (top scored)
+      - Minimum score to display: 2 (at least mentioned twice or one mention + one vote)
+    </word_cloud_visualization>
+
+    <voting_system>
+      - Click any phrase in word cloud to vote
+      - One vote per phrase per session (tracked by session_id)
+      - Duplicate vote attempts show toast: "You already voted for this!"
+      - Votes stored in phrase_votes table with unique constraint
+      - Visual feedback: Pulse animation on vote, updated count
+      - Vote button style: No separate button, just click the word itself
+      - Voted phrases highlighted with accent color or checkmark icon
+      - Track voted phrases in localStorage for instant UI feedback
+      - Display vote count alongside mention count in tooltip
+    </voting_system>
+
+    <real_time_updates>
+      - Subscribe to Supabase real-time on "submissions" table
+      - Subscribe to Supabase real-time on "phrase_votes" table
+      - On new submission: Re-extract phrases from all data, update cloud
+      - On new vote: Increment vote count for that phrase, update cloud
+      - Smooth transitions using React state updates
+      - Optional: Visual notification when new submission arrives (subtle badge)
+      - No manual refresh needed - everything updates live
+    </real_time_updates>
+
+    <live_stats_dashboard>
+      - Display total submission count
+      - Display total vote count
+      - Display unique participants (unique session_ids)
+      - Top 5 phrases list with exact scores
+      - Optional: Activity timeline (last 5 actions)
+      - Optional: Participation rate (submissions + votes over time)
+      - Compact panel, doesn't interfere with word cloud
+      - Updates in real-time with new data
+    </live_stats_dashboard>
+
+    <session_management>
+      - Generate UUID v4 on first visit, store in localStorage
+      - Key: "wordcloud_session_id"
+      - Persist across page refreshes
+      - Track last submission timestamp: "wordcloud_last_submission"
+      - Track voted phrases: "wordcloud_voted_phrases" (JSON array)
+      - Clear button to reset session (optional, for testing)
+      - Display session info in footer (truncated session ID for debugging)
+    </session_management>
+
+    <rate_limiting>
+      - Submission rate limit: 5 minutes (300 seconds)
+      - Stored in localStorage: timestamp of last submission
+      - Countdown timer displayed prominently
+      - Disable submit button during cooldown
+      - Visual indicator: "Next submission in 3:42"
+      - Countdown updates every second
+      - Optional: Vote rate limit (e.g., 1 vote per 10 seconds) - NOT IMPLEMENTED initially
+    </rate_limiting>
+
+    <error_handling>
+      - Network errors: Show toast with retry option
+      - Supabase errors: Display user-friendly message
+      - Rate limit violations: Clear messaging with countdown
+      - Duplicate vote: Toast notification
+      - Empty submission: Inline validation message
+      - Failed real-time connection: Fallback to polling every 10 seconds
+      - Character limit exceeded: Show count in red
+    </error_handling>
+
+    <ui_polish>
+      DESIGN AESTHETIC: Dark Mode Only, Clean & Minimalist
+      - CRITICAL: Dark blue/black theme ONLY (#0A0E27 background) - NO light mode
+      - Professional AI/tech branding aesthetic (Dynamis AI style)
+      - Blue accent colors (#3B82F6, #60A5FA, #06B6D4) for CTAs and highlights
+      - Clean, modern design matching streaming/tech aesthetic
+      - Minimalist UI - no unnecessary elements
+      - Large, clear call-to-action for submissions
+      - Smooth animated transitions (fade in, scale up)
+      - Toast notifications for feedback (react-hot-toast or sonner)
+      - Loading states for all async operations
+      - Skeleton loaders for initial data fetch (dark themed)
+      - Smooth word cloud re-rendering without jarring jumps
+      - Mobile-responsive (stack vertically on small screens)
+      - High contrast light text on dark background for stream readability
+      - Blue gradient word cloud (blue → cyan for score progression)
+    </ui_polish>
+
+    <accessibility>
+      - Keyboard navigation for voting (tab through words, Enter to vote)
+      - ARIA labels for word cloud elements
+      - Screen reader announcements for new submissions
+      - Focus management for form submission
+      - Alt text for all visual elements
+      - Color contrast meets WCAA AA standards
+      - Reduced motion support for animations
+    </accessibility>
+  </core_features>
+
+  <database_schema>
+    <tables>
+      <submissions>
+        - id: UUID PRIMARY KEY DEFAULT uuid_generate_v4()
+        - text: TEXT NOT NULL (the raw submission text)
+        - session_id: TEXT NOT NULL (client-generated UUID for rate limiting)
+        - created_at: TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+
+        Indexes:
+        - CREATE INDEX idx_submissions_created_at ON submissions(created_at DESC);
+        - CREATE INDEX idx_submissions_session_id ON submissions(session_id);
+
+        Security:
+        - NO RLS (Row Level Security) enabled - fully public table
+        - Anonymous users can SELECT and INSERT
+        - No UPDATE or DELETE permissions needed
+      </submissions>
+
+      <phrase_votes>
+        - id: UUID PRIMARY KEY DEFAULT uuid_generate_v4()
+        - phrase_text: TEXT NOT NULL (the exact phrase being voted on, lowercase)
+        - session_id: TEXT NOT NULL (client-generated UUID)
+        - created_at: TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+
+        Constraints:
+        - UNIQUE(phrase_text, session_id) -- prevents duplicate votes
+
+        Indexes:
+        - CREATE INDEX idx_phrase_votes_phrase_text ON phrase_votes(phrase_text);
+        - CREATE INDEX idx_phrase_votes_session_id ON phrase_votes(session_id);
+
+        Security:
+        - NO RLS (Row Level Security) enabled - fully public table
+        - Anonymous users can SELECT and INSERT
+        - Unique constraint prevents duplicate votes
+      </phrase_votes>
+    </tables>
+
+    <supabase_setup_sql>
+      IMPORTANT: Connect to Postgres using SUPABASE_POSTGRES_URL from tmp.md to run this SQL.
+
+      ```sql
+      -- Create submissions table (NO RLS!)
+      CREATE TABLE IF NOT EXISTS submissions (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        text TEXT NOT NULL CHECK (char_length(text) >= 3 AND char_length(text) <= 200),
+        session_id TEXT NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      );
+
+      -- Create indexes for submissions
+      CREATE INDEX IF NOT EXISTS idx_submissions_created_at ON submissions(created_at DESC);
+      CREATE INDEX IF NOT EXISTS idx_submissions_session_id ON submissions(session_id);
+
+      -- Create phrase_votes table (NO RLS!)
+      CREATE TABLE IF NOT EXISTS phrase_votes (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        phrase_text TEXT NOT NULL,
+        session_id TEXT NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        UNIQUE(phrase_text, session_id)
+      );
+
+      -- Create indexes for phrase_votes
+      CREATE INDEX IF NOT EXISTS idx_phrase_votes_phrase_text ON phrase_votes(phrase_text);
+      CREATE INDEX IF NOT EXISTS idx_phrase_votes_session_id ON phrase_votes(session_id);
+
+      -- CRITICAL: DO NOT ENABLE ROW LEVEL SECURITY
+      -- Tables are fully public for anonymous access
+
+      -- Enable real-time (run these in Supabase dashboard if they fail via direct connection)
+      ALTER PUBLICATION supabase_realtime ADD TABLE submissions;
+      ALTER PUBLICATION supabase_realtime ADD TABLE phrase_votes;
+      ```
+
+      Note: If the ALTER PUBLICATION commands fail via direct Postgres connection, you can enable
+      real-time manually in the Supabase dashboard: Database > Replication > Enable for both tables.
+    </supabase_setup_sql>
+  </database_schema>
+
+  <ui_layout>
+    <main_structure>
+      - Single-page application (no routing needed)
+      - Header with title and brief instructions
+      - Main content area split into two sections:
+        1. Left/Top: Submission form + stats dashboard
+        2. Right/Bottom: Word cloud visualization
+      - Footer with session info and credits
+      - Responsive: Stack vertically on mobile (form → cloud → stats)
+    </main_structure>
+
+    <header>
+      - Title: "Help Decide What I Build!"
+      - Subtitle: "Submit your ideas and vote on the best ones"
+      - Optional: Live indicator badge (pulsing red dot)
+      - Brief instruction text: "Submit an idea below or click words to vote"
+    </header>
+
+    <submission_form>
+      - Large textarea (3-4 rows)
+      - Placeholder: "What should I build? (e.g., 'AI coding assistant with voice control')"
+      - Character counter (dynamic, turns red at limit)
+      - Submit button (large, prominent)
+      - Rate limit countdown (when applicable)
+      - Success message (toast or inline)
+      - Validation errors (inline, red text)
+      - Auto-focus on page load
+    </submission_form>
+
+    <word_cloud_section>
+      - Title: "Community Ideas" or "Word Cloud"
+      - Large canvas/SVG for word cloud
+      - Phrases sized by score (mentions + votes)
+      - Color gradient (low score = blue, high score = orange)
+      - Hover tooltip showing exact counts
+      - Click to vote interaction
+      - Loading state (skeleton or spinner)
+      - Empty state (when no submissions yet)
+    </word_cloud_section>
+
+    <stats_dashboard>
+      - Compact card or panel
+      - Title: "Live Stats"
+      - Metrics displayed:
+        - Total Submissions: [count]
+        - Total Votes: [count]
+        - Participants: [unique session count]
+      - Top 5 Phrases section:
+        - Ordered list with rank, phrase, and score
+        - Highlight top phrase with accent color
+      - Updates in real-time
+      - Optional: Mini chart or sparkline
+    </stats_dashboard>
+
+    <footer>
+      - Session ID (truncated, for debugging)
+      - "Reset Session" button (clears localStorage)
+      - Credits: "Built with React + Supabase"
+      - Optional: GitHub link or social links
+    </footer>
+
+    <modals_toasts>
+      - Toast notifications for:
+        - Successful submission
+        - Successful vote
+        - Duplicate vote attempt
+        - Network errors
+        - Rate limit hit
+      - Use react-hot-toast or sonner
+      - Position: Top-right or bottom-center
+      - Auto-dismiss after 3-5 seconds
+    </modals_toasts>
+  </ui_layout>
+
+  <design_system>
+    <theme_mode>
+      CRITICAL: DARK MODE ONLY - NO LIGHT MODE OR THEME TOGGLE
+      Clean, modern, minimalist aesthetic with dark blue/black color scheme
+      Inspired by professional AI/tech branding (Dynamis AI style)
+    </theme_mode>
+
+    <color_palette>
+      Background Colors:
+      - Page Background: #0A0E27 (Very dark blue-black)
+      - Surface/Cards: #141B34 (Dark blue, slightly lighter than background)
+      - Elevated Surface: #1A2342 (For hover states, modals)
+
+      Blue Accent Colors (Primary):
+      - Primary Blue: #3B82F6 (Bright blue for CTAs, important elements)
+      - Accent Blue: #60A5FA (Lighter blue for hover states)
+      - Electric Blue: #2563EB (For highlights, active states)
+      - Cyan Accent: #06B6D4 (For secondary accents, voted phrases)
+
+      Text Colors:
+      - Primary Text: #F3F4F6 (Off-white, high contrast)
+      - Secondary Text: #9CA3AF (Medium gray for labels, descriptions)
+      - Muted Text: #6B7280 (Dark gray for footer, metadata)
+
+      UI Colors:
+      - Border: #1E293B (Subtle dark blue borders)
+      - Border Highlight: #334155 (For focused inputs)
+      - Success: #10B981 (Green for success states)
+      - Error: #EF4444 (Red for errors)
+      - Warning: #F59E0B (Amber for warnings)
+
+      Word Cloud Gradient:
+      - Low Score: #3B82F6 (Blue)
+      - Medium Score: #60A5FA (Sky Blue)
+      - High Score: #06B6D4 (Cyan)
+      - Top Score: #38BDF8 (Bright Cyan)
+
+      CRITICAL: NO light mode, NO theme toggle - pure dark mode experience only
+    </color_palette>
+
+    <typography>
+      - Font Family: Inter, system-ui, sans-serif (from Google Fonts or CDN)
+      - Headings: font-bold, text-2xl to text-4xl
+      - Body: font-normal, text-base (16px)
+      - Small text: text-sm (14px) for labels, captions
+      - Word cloud fonts: font-semibold, various sizes
+      - Monospace: JetBrains Mono for session ID display
+    </typography>
+
+    <spacing>
+      - Container max-width: 1200px
+      - Padding: p-4 to p-8 for sections
+      - Gap between elements: gap-4 to gap-6
+      - Word cloud padding: p-6 to p-12
+      - Responsive: Reduce padding on mobile
+    </spacing>
+
+    <components>
+      <button>
+        - Primary: bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg
+        - Disabled: bg-gray-300 cursor-not-allowed
+        - Focus: focus:ring-2 focus:ring-indigo-500
+        - Transition: transition-colors duration-200
+      </button>
+
+      <input_textarea>
+        - Border: border-2 border-gray-300 focus:border-indigo-500
+        - Rounded: rounded-lg
+        - Padding: p-3 to p-4
+        - Font: text-base
+        - Resize: resize-none (for textarea)
+        - Focus ring: focus:ring-2 focus:ring-indigo-500
+      </input_textarea>
+
+      <card>
+        - Background: bg-white (or bg-gray-50)
+        - Border: border border-gray-200
+        - Rounded: rounded-xl
+        - Shadow: shadow-sm hover:shadow-md
+        - Padding: p-6
+      </card>
+
+      <toast>
+        - Background: bg-white
+        - Border: border-l-4 border-indigo-500 (success) or border-red-500 (error)
+        - Shadow: shadow-lg
+        - Rounded: rounded-lg
+        - Padding: p-4
+        - Icon + message layout
+      </toast>
+    </components>
+
+    <animations>
+      - Fade in: opacity-0 to opacity-100, duration-300
+      - Scale up on vote: scale-100 to scale-110 and back
+      - Pulse for rate limit: animate-pulse
+      - Smooth transitions: transition-all duration-200
+      - Word cloud updates: Smooth re-layout with spring physics
+      - Toast slide in: translateY(-100%) to translateY(0)
+    </animations>
+
+    <responsive_breakpoints>
+      - Mobile: < 640px (single column, stack vertically)
+      - Tablet: 640px - 1024px (two columns, form left, cloud right)
+      - Desktop: > 1024px (optimal layout, stats as sidebar)
+    </responsive_breakpoints>
+  </design_system>
+
+  <key_interactions>
+    <submitting_idea>
+      1. User types idea in textarea (max 200 chars)
+      2. Character counter updates in real-time
+      3. Click "Submit Idea" button
+      4. Client checks rate limit in localStorage
+      5. If allowed: Insert into Supabase submissions table
+      6. Show success toast: "Idea submitted!"
+      7. Clear textarea
+      8. Start rate limit countdown (5 minutes)
+      9. Disable submit button, show countdown
+      10. Real-time update triggers word cloud refresh
+    </submitting_idea>
+
+    <voting_on_phrase>
+      1. User clicks phrase in word cloud
+      2. Client checks if already voted (localStorage check)
+      3. If not voted: Insert into phrase_votes table with session_id
+      4. If duplicate: Supabase returns error, show toast "Already voted!"
+      5. On success: Add phrase to localStorage voted list
+      6. Show success toast: "Vote recorded!"
+      7. Animate phrase (pulse or scale)
+      8. Real-time update increments vote count in cloud
+      9. Update phrase color/style to show voted state
+    </voting_on_phrase>
+
+    <real_time_cloud_update>
+      1. Supabase real-time event fires (new submission or vote)
+      2. React component receives event via useEffect subscription
+      3. Re-fetch all submissions and votes (or incrementally update)
+      4. Re-calculate phrase scores:
+         - Extract n-grams from all submission text
+         - Count mentions for each phrase
+         - Add vote counts from phrase_votes table
+         - Total score = mentions + votes
+      5. Update React state with new phrase data
+      6. Word cloud library re-renders with new sizes/positions
+      7. Smooth transition animation
+    </real_time_cloud_update>
+
+    <viewing_stats>
+      1. Stats dashboard subscribes to real-time updates
+      2. Calculate metrics from data:
+         - Total submissions: COUNT(submissions)
+         - Total votes: COUNT(phrase_votes)
+         - Unique participants: COUNT(DISTINCT session_id) from both tables
+      3. Top 5 phrases: Sort phrases by score, take top 5
+      4. Display in ordered list format
+      5. Update automatically with each new submission/vote
+      6. Highlight #1 phrase with special styling
+    </viewing_stats>
+  </key_interactions>
+
+  <phrase_extraction_algorithm>
+    <overview>
+      Client-side JavaScript function that processes all submissions to extract meaningful
+      phrases (1-word, 2-word, 3-word combinations) and calculate their frequencies.
+    </overview>
+
+    <steps>
+      1. Fetch all submissions from Supabase
+      2. For each submission text:
+         a. Convert to lowercase
+         b. Remove punctuation (except hyphens)
+         c. Split into words
+         d. Filter out stop words (the, and, or, is, at, in, on, etc.)
+         e. Filter out words shorter than 3 characters
+      3. Generate n-grams:
+         a. 1-grams (single words)
+         b. 2-grams (consecutive word pairs)
+         c. 3-grams (consecutive word triplets)
+      4. Count frequency of each unique phrase across all submissions
+      5. Fetch all votes from phrase_votes table
+      6. Group votes by phrase_text, count per phrase
+      7. Combine: For each phrase, score = mention_count + vote_count
+      8. Filter: Only include phrases with score >= 2
+      9. Sort by score descending
+      10. Return top 100 phrases for word cloud display
+    </steps>
+
+    <stop_words_list>
+      Common English stop words to filter out:
+      ["the", "and", "or", "is", "are", "was", "were", "be", "been", "being", "have",
+       "has", "had", "do", "does", "did", "will", "would", "could", "should", "may",
+       "might", "can", "a", "an", "in", "on", "at", "to", "for", "of", "with", "by",
+       "from", "as", "it", "this", "that", "these", "those", "i", "you", "we", "they",
+       "he", "she", "what", "when", "where", "why", "how", "all", "any", "both", "each",
+       "few", "more", "most", "some", "such", "no", "not", "only", "own", "same", "so",
+       "than", "too", "very", "just", "but", "if", "then", "now"]
+    </stop_words_list>
+
+    <example>
+      Input submission: "Build an AI coding assistant with real-time suggestions"
+
+      Step 1: Lowercase: "build an ai coding assistant with real-time suggestions"
+      Step 2: Remove punctuation: "build an ai coding assistant with real time suggestions"
+      Step 3: Split: ["build", "an", "ai", "coding", "assistant", "with", "real", "time", "suggestions"]
+      Step 4: Filter stop words: ["build", "ai", "coding", "assistant", "real", "time", "suggestions"]
+      Step 5: Generate n-grams:
+        - 1-grams: ["build", "ai", "coding", "assistant", "real", "time", "suggestions"]
+        - 2-grams: ["build ai", "ai coding", "coding assistant", "assistant real", "real time", "time suggestions"]
+        - 3-grams: ["build ai coding", "ai coding assistant", "coding assistant real", "assistant real time", "real time suggestions"]
+
+      All extracted phrases:
+      ["build", "ai", "coding", "assistant", "real", "time", "suggestions",
+       "build ai", "ai coding", "coding assistant", "assistant real", "real time", "time suggestions",
+       "build ai coding", "ai coding assistant", "coding assistant real", "assistant real time", "real time suggestions"]
+    </example>
+
+    <implementation_notes>
+      - Use a Map to track phrase frequencies efficiently
+      - Process all submissions on mount and on each real-time update
+      - Debounce updates if processing is slow (>100ms)
+      - Consider memoization for expensive calculations
+      - Cache processed phrases until new data arrives
+    </implementation_notes>
+  </phrase_extraction_algorithm>
+
+  <implementation_steps>
+    <step number="1">
+      <title>Read Credentials (Database Already Set Up)</title>
+      <tasks>
+        🎯 DATABASE IS ALREADY FULLY CONFIGURED - DO NOT CREATE TABLES 🎯
+
+        - Read tmp.md from EXACT PATH: ../../tmp.md (TWO directories up from project root)
+        - If ../../tmp.md not found, use glob pattern **/tmp.md to locate it
+        - Extract these values from tmp.md:
+          * SUPABASE_PROJECT_URL (you need this for .env)
+          * SUPABASE_ANON_KEY (you need this for .env)
+          * SUPABASE_POSTGRES_URL (for reference only - tables already exist)
+
+        CRITICAL: The Supabase database is ALREADY SET UP with:
+        ✅ Tables created: submissions and phrase_votes
+        ✅ Real-time enabled on both tables
+        ✅ RLS disabled (fully public access)
+        ✅ Indexes created
+        ✅ Unique constraints in place
+
+        YOU DO NOT NEED TO:
+        ❌ Create any tables
+        ❌ Run any SQL
+        ❌ Configure Row Level Security
+        ❌ Enable real-time (already enabled)
+
+        YOU ONLY NEED TO:
+        ✅ Read credentials from ../../tmp.md
+        ✅ Use SUPABASE_PROJECT_URL and SUPABASE_ANON_KEY in .env (step 2)
+        ✅ Connect from frontend using @supabase/supabase-js
+      </tasks>
+    </step>
+
+    <step number="2">
+      <title>Project Initialization</title>
+      <tasks>
+        - Create React + Vite project: npm create vite@latest
+        - Install dependencies:
+          * @supabase/supabase-js (Supabase client)
+          * react-wordcloud or d3-cloud (word cloud visualization)
+          * react-hot-toast or sonner (toast notifications)
+          * uuid (session ID generation)
+          * bad-words (profanity filter - optional, or create custom list)
+        - Install Tailwind CSS: npm install -D tailwindcss postcss autoprefixer
+        - Configure Tailwind config with dark mode colors (see design_system section)
+        - Create .env file at EXACT PATH: ./.env (in project root) with these values from ../../tmp.md:
+          * VITE_SUPABASE_URL=[value of SUPABASE_PROJECT_URL from ../../tmp.md]
+          * VITE_SUPABASE_ANON_KEY=[value of SUPABASE_ANON_KEY from ../../tmp.md]
+        - Set up Supabase client in src/lib/supabase.js
+      </tasks>
+    </step>
+
+    <step number="3">
+      <title>Core UI Layout</title>
+      <tasks>
+        - Create main App component with layout structure
+        - Add header with title and instructions
+        - Create submission form component with textarea and submit button
+        - Add character counter to textarea
+        - Create stats dashboard component (placeholder)
+        - Create word cloud container (placeholder)
+        - Add footer with session info
+        - Apply Tailwind styling for responsive layout with DARK MODE colors
+
+        🧪 PUPPETEER VALIDATION (Run npm run dev first):
+        - Navigate to http://localhost:5173
+        - Take screenshot of full page
+        - Verify dark blue/black background (#0A0E27) is applied
+        - Verify all text is light colored and readable
+        - Verify layout is structured correctly (header, form, word cloud area, stats, footer)
+        - Verify responsive layout on mobile viewport (375x667)
+        - Take screenshot of mobile view
+        - Fix any visual issues before proceeding to step 4
+      </tasks>
+    </step>
+
+    <step number="4">
+      <title>Session Management</title>
+      <tasks>
+        - Create useSession custom hook
+        - Generate UUID v4 on first visit, store in localStorage
+        - Key: "wordcloud_session_id"
+        - Retrieve session ID on mount
+        - Create function to reset session (clear localStorage)
+        - Display truncated session ID in footer
+
+        🧪 PUPPETEER VALIDATION:
+        - Refresh the page at http://localhost:5173
+        - Use puppeteer_evaluate to check localStorage for "wordcloud_session_id"
+        - Verify session ID is a valid UUID
+        - Verify session ID displays in footer (truncated)
+        - Take screenshot showing session ID in footer
+        - Click "Reset Session" button (if you added one)
+        - Verify localStorage is cleared
+        - Verify new session ID is generated
+      </tasks>
+    </step>
+
+    <step number="5">
+      <title>Submission Form Logic & Profanity Filter</title>
+      <tasks>
+        - Add form validation (min 3 chars, max 200 chars)
+        - Implement profanity filter (using bad-words or custom list)
+        - Implement submit handler to insert into Supabase submissions table
+        - Add error handling for failed submissions
+        - Show success toast on successful submit
+        - Show error toast for profanity detection
+        - Clear textarea after submission
+        - Disable submit button during submission
+        - Add loading state to button
+
+        🧪 PUPPETEER VALIDATION:
+        - Fill textarea with "AI coding assistant" using puppeteer_fill
+        - Click submit button using puppeteer_click
+        - Verify success toast appears
+        - Take screenshot of success toast
+        - Use Read tool to query Supabase database and verify submission exists
+        - Clear the submission from database (for clean testing)
+        - Fill textarea with profane text (e.g., "fuck this")
+        - Click submit
+        - Verify error toast appears with profanity message
+        - Verify submission is NOT in database
+        - Take screenshot of error state
+        - Test empty submission (verify blocked)
+        - Test 201-character submission (verify blocked)
+        - Take screenshots of validation errors
+      </tasks>
+    </step>
+
+    <step number="6">
+      <title>Rate Limiting</title>
+      <tasks>
+        - Store last submission timestamp in localStorage: "wordcloud_last_submission"
+        - Check if 5 minutes have passed before allowing submit
+        - Create countdown timer component
+        - Update countdown every second
+        - Disable submit button during cooldown
+        - Show "Next submission in X:XX" message
+        - Reset rate limit after successful submission
+
+        🧪 PUPPETEER VALIDATION:
+        - Submit a test message "test message 1"
+        - Verify countdown timer appears showing "4:59" or similar
+        - Verify submit button is disabled
+        - Take screenshot of disabled state with countdown
+        - Use puppeteer_evaluate to check localStorage "wordcloud_last_submission" exists
+        - Wait 5-10 seconds, verify countdown decrements
+        - Take another screenshot showing updated countdown
+        - For testing, manually clear localStorage or reduce cooldown to 10 seconds
+        - Verify submit button re-enables after cooldown expires
+      </tasks>
+    </step>
+
+    <step number="7">
+      <title>Data Fetching and Real-time</title>
+      <tasks>
+        - Fetch all submissions on mount from Supabase
+        - Fetch all phrase_votes on mount
+        - Set up real-time subscription to submissions table
+        - Set up real-time subscription to phrase_votes table
+        - Update React state on real-time events
+        - Handle real-time connection errors (fallback to polling)
+        - Add loading states for initial fetch
+
+        🧪 PUPPETEER VALIDATION:
+        - Refresh page and verify initial data loads from Supabase
+        - Use Read tool to check database has submissions
+        - Open a SECOND browser context with Puppeteer
+        - In context 1: Submit a new message "real-time test"
+        - In context 2: Verify the submission appears automatically (without refresh)
+        - Take screenshots from both contexts showing the new submission
+        - Close second context
+        - Verify real-time connection is working
+        - Check browser console for any real-time errors (use puppeteer_evaluate)
+      </tasks>
+    </step>
+
+    <step number="8">
+      <title>Phrase Extraction</title>
+      <tasks>
+        - Create extractPhrases utility function
+        - Implement stop word filtering
+        - Implement n-gram generation (1, 2, 3 word phrases)
+        - Process all submissions to extract phrases
+        - Count phrase frequencies (mentions)
+        - Combine with votes from phrase_votes table
+        - Calculate total scores (mentions + votes)
+        - Filter phrases with score >= 2
+        - Sort by score descending, return top 100
+
+        🧪 PUPPETEER VALIDATION:
+        - Submit multiple test messages with overlapping words:
+          * "AI coding assistant"
+          * "Build an AI agent"
+          * "Coding assistant with AI"
+        - Use puppeteer_evaluate to check extracted phrases in browser console
+        - Verify phrases like "ai", "coding", "assistant", "ai coding", "coding assistant" exist
+        - Verify stop words like "an", "with" are filtered out
+        - Verify phrase scores are calculated correctly (count mentions)
+        - Log phrase data to console and verify with screenshot
+      </tasks>
+    </step>
+
+    <step number="9">
+      <title>Word Cloud Visualization</title>
+      <tasks>
+        - Install and configure react-wordcloud library
+        - Pass phrase data to word cloud component
+        - Configure word sizes based on scores
+        - Set up color gradient (blue to cyan, NOT orange - see design_system)
+        - Add hover tooltip showing counts
+        - Implement click handler for voting
+        - Style word cloud container with dark theme
+        - Add loading skeleton for initial render
+        - Handle empty state (no submissions yet)
+
+        🧪 PUPPETEER VALIDATION:
+        - Navigate to http://localhost:5173
+        - Verify word cloud renders with phrases
+        - Take screenshot of word cloud
+        - Verify larger words have higher scores
+        - Verify blue-to-cyan gradient colors are applied (NOT orange)
+        - Use puppeteer_hover on a phrase
+        - Verify tooltip appears showing counts (e.g., "3 mentions, 2 votes")
+        - Take screenshot of tooltip
+        - Verify word cloud looks good on dark background (#0A0E27)
+        - Test on mobile viewport (375x667)
+        - Take screenshot of mobile word cloud
+      </tasks>
+    </step>
+
+    <step number="10">
+      <title>Voting System</title>
+      <tasks>
+        - Track voted phrases in localStorage: "wordcloud_voted_phrases" (JSON array)
+        - Implement vote handler: Insert into phrase_votes table
+        - Check for duplicates before voting (localStorage)
+        - Handle Supabase unique constraint errors (duplicate votes)
+        - Show success toast on vote
+        - Show "already voted" toast on duplicate
+        - Update voted phrases in localStorage
+        - Highlight voted phrases in word cloud (different color/opacity - use cyan #06B6D4)
+        - Add vote animation (pulse or scale)
+
+        🧪 PUPPETEER VALIDATION:
+        - Navigate to http://localhost:5173
+        - Click a phrase in the word cloud (e.g., "coding")
+        - Verify success toast appears
+        - Take screenshot of success toast
+        - Verify phrase is highlighted with cyan/different styling
+        - Use Read tool to verify vote exists in phrase_votes table
+        - Click the SAME phrase again
+        - Verify "already voted" toast appears
+        - Take screenshot of duplicate vote error
+        - Use puppeteer_evaluate to check localStorage "wordcloud_voted_phrases"
+        - Verify the voted phrase is in the array
+        - Open second browser context
+        - Verify vote appears in both contexts (real-time)
+        - Take screenshots from both contexts
+      </tasks>
+    </step>
+
+    <step number="11">
+      <title>Stats Dashboard</title>
+      <tasks>
+        - Calculate total submissions count
+        - Calculate total votes count
+        - Calculate unique participants (distinct session_ids)
+        - Extract top 5 phrases by score
+        - Display metrics in card layout with dark theme styling
+        - Style top phrase with highlight (blue accent)
+        - Update stats in real-time with data changes
+        - Add loading state for stats
+
+        🧪 PUPPETEER VALIDATION:
+        - Take screenshot of stats dashboard
+        - Verify total submissions count matches database
+        - Verify total votes count matches database
+        - Verify unique participants count is accurate
+        - Verify top 5 phrases are displayed with correct scores
+        - Verify top phrase has highlight/accent color
+        - Submit a new message and verify stats update in real-time
+        - Vote on a phrase and verify vote count increments
+        - Take screenshot of updated stats
+      </tasks>
+    </step>
+
+    <step number="12">
+      <title>Polish and UX</title>
+      <tasks>
+        - Ensure all toast notifications work (react-hot-toast or sonner)
+        - Implement smooth animations (fade in, scale, transitions)
+        - Add loading spinners and skeletons (dark themed)
+        - Verify mobile responsiveness on all screen sizes
+        - Add keyboard shortcuts (Enter to submit)
+        - Implement accessibility (ARIA labels, focus management)
+        - Add error boundaries for error handling
+        - Test and fix edge cases
+        - Final dark mode styling pass
+
+        🧪 PUPPETEER VALIDATION:
+        - Full visual inspection on desktop (1920x1080)
+        - Take screenshot
+        - Full visual inspection on tablet (768x1024)
+        - Take screenshot
+        - Full visual inspection on mobile (375x667)
+        - Take screenshot
+        - Test keyboard navigation (Tab through elements, Enter to submit)
+        - Verify all animations are smooth
+        - Verify dark mode colors are consistent throughout
+        - Check for any light mode leaks (white backgrounds, dark text)
+        - Verify all loading states work correctly
+        - Test error boundaries by triggering an error
+      </tasks>
+    </step>
+
+    <step number="13">
+      <title>🚀 PUPPETEER VALIDATION (CRITICAL)</title>
+      <tasks>
+        🎯 USE PUPPETEER MCP SERVER EXTENSIVELY FOR ALL VALIDATION 🎯
+
+        The Puppeteer MCP server is ESSENTIAL for validating this application works correctly.
+        You MUST use it heavily to test all features interactively.
+
+        PUPPETEER VALIDATION CHECKLIST:
+
+        1. Launch Application
+           - Start dev server: npm run dev
+           - Use Puppeteer to navigate to http://localhost:5173
+           - Take screenshot to verify page loads
+
+        2. Visual Validation (Dark Mode)
+           - Verify dark blue/black color scheme is applied (#0A0E27 background)
+           - Check that NO light mode exists
+           - Verify all text is readable (light on dark)
+           - Take screenshot of full page
+
+        3. Submission Flow Testing
+           - Use Puppeteer to fill textarea with test text: "AI coding assistant"
+           - Click submit button
+           - Verify toast notification appears
+           - Verify submission appears in Supabase database (query via Read tool)
+           - Verify rate limit countdown appears
+           - Take screenshot showing countdown timer
+
+        4. Profanity Filter Testing
+           - Use Puppeteer to fill textarea with profane text
+           - Attempt submission
+           - Verify error message appears
+           - Verify submission is BLOCKED (not in database)
+           - Take screenshot of error state
+
+        5. Word Cloud Validation
+           - Verify word cloud renders with phrases from submissions
+           - Use Puppeteer to hover over a phrase (verify tooltip appears)
+           - Take screenshot of word cloud with tooltip
+           - Verify font sizes reflect scores
+           - Verify blue gradient colors are applied
+
+        6. Voting Flow Testing
+           - Use Puppeteer to click a phrase in word cloud
+           - Verify vote success toast appears
+           - Verify vote is recorded in phrase_votes table
+           - Try clicking same phrase again
+           - Verify "already voted" toast appears
+           - Take screenshot of voted state
+
+        7. Real-time Updates Validation
+           - Open second browser context with Puppeteer
+           - Submit in one context
+           - Verify word cloud updates in both contexts
+           - Vote in one context
+           - Verify phrase size changes in both contexts
+           - Take screenshots from both contexts
+
+        8. Stats Dashboard Validation
+           - Verify total submissions count is accurate
+           - Verify total votes count is accurate
+           - Verify unique participants count
+           - Verify top 5 phrases are correct
+           - Take screenshot of stats dashboard
+
+        9. Mobile Responsiveness
+           - Use Puppeteer viewport emulation for mobile (375x667)
+           - Verify layout stacks vertically
+           - Verify word cloud is readable on small screen
+           - Test submission and voting on mobile viewport
+           - Take screenshot of mobile view
+
+        10. Rate Limiting Validation
+            - Make first submission
+            - Verify 5-minute countdown starts
+            - Verify submit button is disabled
+            - Take screenshot of disabled state
+
+        11. Session Management
+            - Verify session ID in footer
+            - Test "Reset Session" button
+            - Verify localStorage is cleared
+            - Verify can submit again after reset
+
+        12. Edge Cases
+            - Submit empty text (verify validation blocks it)
+            - Submit text under 3 characters (verify blocked)
+            - Submit text over 200 characters (verify blocked)
+            - Submit with only whitespace (verify blocked)
+
+        REQUIRED PUPPETEER TOOLS TO USE:
+        - puppeteer_navigate (launch app)
+        - puppeteer_screenshot (capture validation evidence)
+        - puppeteer_click (test interactions)
+        - puppeteer_fill (test form inputs)
+        - puppeteer_evaluate (check DOM state, verify data)
+
+        After validation, build and prepare for deployment:
+        - Build production bundle: npm run build
+        - Test production build locally
+        - Deploy to Vercel, Netlify, or similar
+        - Run Puppeteer validation against production URL
+        - Share link with audience!
+
+        CRITICAL: Do not skip Puppeteer validation. It's the primary way to verify
+        the application works end-to-end. Manual testing alone is insufficient.
+      </tasks>
+    </step>
+  </implementation_steps>
+
+  <success_criteria>
+    <functionality>
+      - Users can submit ideas without authentication
+      - Submissions are rate-limited to once per 5 minutes
+      - Word cloud displays all phrases extracted from submissions
+      - Users can vote on phrases by clicking them
+      - Duplicate votes are prevented (one vote per phrase per session)
+      - Real-time updates work smoothly (new submissions and votes appear instantly)
+      - Stats dashboard shows accurate counts
+      - All data persists in Supabase
+    </functionality>
+
+    <user_experience>
+      - Interface is clean, intuitive, and visually appealing
+      - Submission process is clear with good feedback
+      - Rate limit countdown is visible and accurate
+      - Word cloud is interactive and responsive
+      - Voting provides instant visual feedback
+      - Toast notifications are helpful and not intrusive
+      - Mobile layout is fully functional
+      - Page loads quickly and feels snappy
+    </user_experience>
+
+    <technical_quality>
+      - No authentication required (anonymous Supabase access)
+      - NO RLS enabled - tables are fully public for anonymous access
+      - Rate limiting works client-side with localStorage
+      - Real-time subscriptions handle errors gracefully
+      - Phrase extraction is efficient and accurate
+      - Code is clean, modular, and maintainable
+      - No console errors or warnings
+      - Production build is optimized
+    </technical_quality>
+
+    <live_stream_readiness>
+      - App can handle 100+ concurrent users
+      - Word cloud updates smoothly with high activity
+      - Clear visual hierarchy works on stream overlay
+      - Colors and fonts are readable in video
+      - Stats are easy to reference during stream
+      - No lag or performance issues during demo
+      - Link is easy to share (short URL)
+      - Works on all devices (desktop, mobile, tablet)
+    </live_stream_readiness>
+  </success_criteria>
+
+  <additional_considerations>
+    <performance_optimization>
+      - Debounce real-time updates if events fire too frequently (>10 per second)
+      - Memoize phrase extraction results until data changes
+      - Use React.memo for word cloud component to prevent unnecessary re-renders
+      - Limit initial data fetch (last 500 submissions max)
+      - Consider pagination or infinite scroll for very large datasets
+      - Optimize word cloud library settings (max words: 100)
+    </performance_optimization>
+
+    <moderation_optional>
+      - Consider adding a simple admin panel (password-protected route)
+      - Admin can view all submissions and delete inappropriate ones
+      - Flag system for users to report inappropriate content (optional)
+      - Basic profanity filter on submission (optional, client-side)
+      - Note: For live stream, manual moderation may be needed
+    </moderation_optional>
+
+    <analytics_optional>
+      - Track submission rate over time (chart)
+      - Track voting patterns (which phrases get most votes)
+      - Track participant growth (unique sessions over time)
+      - Export data to CSV for post-stream analysis
+      - Integration with Google Analytics or Plausible (optional)
+    </analytics_optional>
+
+    <future_enhancements>
+      - Emoji reactions instead of just votes (❤️, 🔥, 👍)
+      - Phrase suggestions as user types (autocomplete)
+      - Category tagging (AI, Web, Mobile, etc.)
+      - Filter word cloud by category
+      - Admin dashboard for live moderation
+      - Export word cloud as image (PNG download)
+      - Dark mode toggle
+      - Custom color schemes
+      - Leaderboard of top contributors (by session)
+    </future_enhancements>
+
+    <deployment_notes>
+      - Deploy frontend to Vercel (recommended for Vite)
+      - Supabase handles all backend (database + real-time)
+      - Set environment variables in Vercel dashboard
+      - Use custom domain or Vercel subdomain
+      - Enable Vercel Analytics for traffic monitoring (optional)
+      - Test with production Supabase URL before going live
+      - Share shortened link (bit.ly or similar) for easy access
+    </deployment_notes>
+  </additional_considerations>
+
+  <file_structure>
+    ```
+    project-root/
+    ├── src/
+    │   ├── components/
+    │   │   ├── Header.jsx
+    │   │   ├── SubmissionForm.jsx
+    │   │   ├── WordCloudVisualization.jsx
+    │   │   ├── StatsDashboard.jsx
+    │   │   ├── Footer.jsx
+    │   │   └── RateLimitCountdown.jsx
+    │   ├── hooks/
+    │   │   ├── useSession.js
+    │   │   ├── useSubmissions.js
+    │   │   ├── useVotes.js
+    │   │   └── usePhrases.js
+    │   ├── lib/
+    │   │   ├── supabase.js (Supabase client)
+    │   │   ├── phraseExtraction.js (n-gram logic)
+    │   │   └── stopWords.js (stop word list)
+    │   ├── utils/
+    │   │   ├── localStorage.js (helper functions)
+    │   │   └── rateLimiting.js (rate limit logic)
+    │   ├── App.jsx
+    │   ├── main.jsx
+    │   └── index.css (Tailwind imports)
+    ├── public/
+    │   └── (static assets)
+    ├── .env (Supabase credentials)
+    ├── .env.example (template)
+    ├── index.html
+    ├── vite.config.js
+    ├── tailwind.config.js
+    ├── postcss.config.js
+    ├── package.json
+    └── README.md
+    ```
+  </file_structure>
+
+  <environment_variables_example>
+    ```env
+    # .env.example
+    VITE_SUPABASE_URL=https://your-project.supabase.co
+    VITE_SUPABASE_ANON_KEY=your-anon-key-here
+    ```
+  </environment_variables_example>
+</project_specification>

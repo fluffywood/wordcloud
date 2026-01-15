@@ -61,7 +61,7 @@
       "Step 4: Verify new session ID is generated",
       "Step 5: Verify new ID differs from original"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -113,7 +113,7 @@
       "Step 3: Verify submission is blocked",
       "Step 4: Verify error message is displayed"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -124,7 +124,7 @@
       "Step 3: Verify submission is blocked",
       "Step 4: Verify validation error message appears"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -200,7 +200,7 @@
       "Step 4: Verify submission is NOT saved to database",
       "Step 5: Verify textarea is NOT cleared"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -434,7 +434,7 @@
       "Step 3: Verify tooltip shows mention count",
       "Step 4: Verify tooltip shows vote count"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1298,7 +1298,7 @@
       "Step 2: Verify tooltip has dark background",
       "Step 3: Verify tooltip text is readable"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1839,7 +1839,7 @@
       "Step 1: Scroll to footer",
       "Step 2: Verify 'Built with React + Supabase' or similar"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
