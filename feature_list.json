@@ -8,7 +8,7 @@
       "Step 3: Verify page loads without console errors",
       "Step 4: Verify main components are visible (header, form, word cloud area)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -18,7 +18,7 @@
       "Step 2: Verify Supabase client initializes with .env credentials",
       "Step 3: Check browser console for any Supabase connection errors"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -28,7 +28,7 @@
       "Step 2: Check localStorage for 'wordcloud_session_id' key",
       "Step 3: Verify value is a valid UUID v4 format"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -38,7 +38,7 @@
       "Step 2: Refresh the page",
       "Step 3: Verify session ID remains the same"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -49,7 +49,7 @@
       "Step 3: Verify truncated session ID is displayed",
       "Step 4: Verify it matches localStorage value (first/last few chars)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -72,7 +72,7 @@
       "Step 3: Verify submit button is visible",
       "Step 4: Verify placeholder text is displayed"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -92,7 +92,7 @@
       "Step 3: Type 'Hello' in textarea",
       "Step 4: Verify counter updates to '5/200'"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -156,7 +156,7 @@
       "Step 4: Query Supabase submissions table",
       "Step 5: Verify submission exists with correct text and session_id"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -166,7 +166,7 @@
       "Step 2: Click submit button",
       "Step 3: Verify textarea is empty after success"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -232,7 +232,7 @@
       "Step 3: Verify submit button is disabled",
       "Step 4: Check localStorage for 'wordcloud_last_submission' timestamp"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -243,7 +243,7 @@
       "Step 3: Wait 10 seconds",
       "Step 4: Verify countdown has decremented by ~10 seconds"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -253,7 +253,7 @@
       "Step 2: Observe countdown timer for 5 seconds",
       "Step 3: Verify timer decrements each second"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -393,7 +393,7 @@
       "Step 3: Verify word cloud container is visible",
       "Step 4: Verify phrases are displayed inside word cloud"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -485,7 +485,7 @@
       "Step 2: Verify vote is recorded in phrase_votes table",
       "Step 3: Verify success feedback is shown"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -516,7 +516,7 @@
       "Step 2: Check localStorage 'wordcloud_voted_phrases'",
       "Step 3: Verify voted phrase is in the array"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -558,7 +558,7 @@
       "Step 2: Check stats dashboard display",
       "Step 3: Verify displayed count matches database count"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -568,7 +568,7 @@
       "Step 2: Check stats dashboard display",
       "Step 3: Verify displayed count matches database count"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -578,7 +578,7 @@
       "Step 2: Check stats dashboard display",
       "Step 3: Verify participant count matches"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -588,7 +588,7 @@
       "Step 2: Check stats dashboard display",
       "Step 3: Verify correct 5 phrases are listed in order"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -597,7 +597,7 @@
       "Step 1: Look at top 5 phrases in stats",
       "Step 2: Verify #1 phrase has accent color or special styling"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -626,7 +626,7 @@
       "Step 1: Navigate to application",
       "Step 2: Verify header shows 'Help Decide What I Build!' or similar"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -635,7 +635,7 @@
       "Step 1: Navigate to application",
       "Step 2: Verify subtitle text explains how to use the app"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -863,7 +863,7 @@
       "Step 2: Inspect page background color",
       "Step 3: Verify background is dark blue-black #0A0E27"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -873,7 +873,7 @@
       "Step 2: Verify no light/dark mode switch exists",
       "Step 3: Verify only dark mode is available"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1136,7 +1136,7 @@
       "Step 1: Resize viewport to 375px width",
       "Step 2: Verify layout stacks: form, then word cloud, then stats"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1163,7 +1163,7 @@
       "Step 1: View word cloud on mobile viewport (375px)",
       "Step 2: Verify phrases are readable and not too small"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",

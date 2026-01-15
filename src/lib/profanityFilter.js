@@ -8,7 +8,7 @@ const PROFANITY_LIST = [
   // Common profanity (with variations)
   'fuck', 'f*ck', 'f**k', 'fck', 'fuk', 'fvck', 'fucc', 'phuck', 'phuk',
   'shit', 'sh*t', 'sh1t', 'sht', 'shlt', 'schit',
-  'ass', 'a$$', 'a**', '@ss',
+  'ass', 'a$$', '@ss',
   'bitch', 'b*tch', 'b1tch', 'biatch',
   'damn', 'd*mn', 'dmn',
   'hell', // only when used as profanity
@@ -71,8 +71,8 @@ const PROFANITY_LIST = [
 const profanityPatterns = PROFANITY_LIST.map(word => {
   // Escape special regex characters except asterisks
   const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  // Replace asterisks with wildcard pattern (matches any character)
-  const pattern = escaped.replace(/\\\*/g, '.')
+  // Replace asterisks with word character pattern (matches letter or number only, not spaces)
+  const pattern = escaped.replace(/\\\*/g, '[a-z0-9]')
   return new RegExp(`\\b${pattern}\\b`, 'i')
 })
 
