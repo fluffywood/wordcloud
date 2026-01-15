@@ -607,7 +607,7 @@
       "Step 2: Submit new idea",
       "Step 3: Verify submission count increments without page refresh"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -665,7 +665,7 @@
       "Step 2: Press Enter key",
       "Step 3: Verify form submits successfully"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
