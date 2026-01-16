@@ -1,12 +1,18 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 
 /**
  * Custom hook for managing submissions data and real-time updates
+ * Includes debouncing to batch rapid real-time updates
  */
 export function useSubmissions() {
   const [submissions, setSubmissions] = useState([])
   const [loading, setLoading] = useState(true)
+
+  // Debounce buffer for batching rapid updates
+  const pendingUpdatesRef = useRef([])
+  const debounceTimerRef = useRef(null)
+  const DEBOUNCE_DELAY = 100 // ms - batch updates within 100ms
 
   // Fetch initial submissions
   useEffect(() => {
@@ -31,8 +37,17 @@ export function useSubmissions() {
     fetchSubmissions()
   }, [])
 
-  // Set up real-time subscription
+  // Set up real-time subscription with debouncing
   useEffect(() => {
+    // Process batched updates
+    const processBatchedUpdates = () => {
+      if (pendingUpdatesRef.current.length > 0) {
+        const updates = [...pendingUpdatesRef.current]
+        pendingUpdatesRef.current = []
+        setSubmissions((prev) => [...updates, ...prev])
+      }
+    }
+
     const channel = supabase
       .channel('submissions-changes')
       .on(
@@ -43,7 +58,14 @@ export function useSubmissions() {
           table: 'submissions',
         },
         (payload) => {
-          setSubmissions((prev) => [payload.new, ...prev])
+          // Add to pending updates buffer
+          pendingUpdatesRef.current.push(payload.new)
+
+          // Clear existing timer and set new one (debounce)
+          if (debounceTimerRef.current) {
+            clearTimeout(debounceTimerRef.current)
+          }
+          debounceTimerRef.current = setTimeout(processBatchedUpdates, DEBOUNCE_DELAY)
         }
       )
       .subscribe((status) => {
@@ -56,6 +78,9 @@ export function useSubmissions() {
       })
 
     return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current)
+      }
       supabase.removeChannel(channel)
     }
   }, [])

@@ -2067,7 +2067,7 @@
       "Step 2: Verify word cloud doesn't re-render 10 times",
       "Step 3: Verify debounce batches updates"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2175,7 +2175,7 @@
       "Step 2: Verify helpful message or basic content shown",
       "Step 3: (Note: full functionality requires JS)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",

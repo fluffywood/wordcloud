@@ -1,14 +1,20 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 import { getVotedPhrases, addVotedPhrase, hasVotedForPhrase } from '../utils/localStorage'
 
 /**
  * Custom hook for managing votes data and real-time updates
+ * Includes debouncing to batch rapid real-time updates
  */
 export function useVotes(sessionId) {
   const [votes, setVotes] = useState([])
   const [votedPhrases, setVotedPhrases] = useState([])
   const [loading, setLoading] = useState(true)
+
+  // Debounce buffer for batching rapid updates
+  const pendingUpdatesRef = useRef([])
+  const debounceTimerRef = useRef(null)
+  const DEBOUNCE_DELAY = 100 // ms - batch updates within 100ms
 
   // Initialize voted phrases from localStorage
   useEffect(() => {
@@ -36,8 +42,17 @@ export function useVotes(sessionId) {
     fetchVotes()
   }, [])
 
-  // Set up real-time subscription
+  // Set up real-time subscription with debouncing
   useEffect(() => {
+    // Process batched updates
+    const processBatchedUpdates = () => {
+      if (pendingUpdatesRef.current.length > 0) {
+        const updates = [...pendingUpdatesRef.current]
+        pendingUpdatesRef.current = []
+        setVotes((prev) => [...prev, ...updates])
+      }
+    }
+
     const channel = supabase
       .channel('votes-changes')
       .on(
@@ -48,7 +63,14 @@ export function useVotes(sessionId) {
           table: 'phrase_votes',
         },
         (payload) => {
-          setVotes((prev) => [...prev, payload.new])
+          // Add to pending updates buffer
+          pendingUpdatesRef.current.push(payload.new)
+
+          // Clear existing timer and set new one (debounce)
+          if (debounceTimerRef.current) {
+            clearTimeout(debounceTimerRef.current)
+          }
+          debounceTimerRef.current = setTimeout(processBatchedUpdates, DEBOUNCE_DELAY)
         }
       )
       .subscribe((status) => {
@@ -61,6 +83,9 @@ export function useVotes(sessionId) {
       })
 
     return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current)
+      }
       supabase.removeChannel(channel)
     }
   }, [])
