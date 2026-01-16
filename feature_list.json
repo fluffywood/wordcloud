@@ -536,7 +536,7 @@
       "Step 2: Observe phrase during vote",
       "Step 3: Verify pulse or scale animation plays"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1202,7 +1202,7 @@
       "Step 2: Observe animation (pulse or scale)",
       "Step 3: Verify animation is visible and smooth"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1590,7 +1590,7 @@
       "Step 9: Verify no jarring or instant changes",
       "Step 10: Verify animations are not too slow"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2006,7 +2006,7 @@
       "Step 2: Load application",
       "Step 3: Verify animations are reduced or disabled"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2027,7 +2027,7 @@
       "Step 2: Press Escape",
       "Step 3: Verify toast dismisses (if implemented)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2285,7 +2285,7 @@
       "Step 2: Run npm install",
       "Step 3: Verify completes successfully"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",

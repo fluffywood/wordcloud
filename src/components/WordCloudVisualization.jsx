@@ -14,6 +14,7 @@ export default function WordCloudVisualization({
   loading,
 }) {
   const [hoveredWord, setHoveredWord] = useState(null)
+  const [voteAnimation, setVoteAnimation] = useState(null) // { x, y, text } for animation
 
   // Use ref to hold the latest onVote callback
   const onVoteRef = useRef(onVote)
@@ -50,7 +51,14 @@ export default function WordCloudVisualization({
 
   // Callbacks for word cloud interactions
   const callbacks = useMemo(() => ({
-    onWordClick: async (word) => {
+    onWordClick: async (word, event) => {
+      // Show vote animation (will appear in word cloud center)
+      setVoteAnimation({
+        text: word.text
+      })
+      // Clear animation after it plays
+      setTimeout(() => setVoteAnimation(null), 1500)
+
       // Call onVote using ref - it handles both new votes and duplicate attempts
       // The word cloud has built-in transition animation (transitionDuration: 500)
       // which provides visual feedback when word sizes change after voting
@@ -128,7 +136,7 @@ export default function WordCloudVisualization({
   }
 
   return (
-    <div className="bg-surface hover:bg-surface-elevated rounded-xl p-6 border border-border-default transition-colors duration-200">
+    <div className="bg-surface hover:bg-surface-elevated rounded-xl p-6 border border-border-default transition-colors duration-200 relative">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold text-text-primary">
           Community Ideas
@@ -164,6 +172,20 @@ export default function WordCloudVisualization({
               <span className="ml-2 text-cyan-accent">✓ You voted</span>
             )}
           </p>
+        </div>
+      )}
+
+      {/* Vote animation overlay - appears in center of word cloud */}
+      {voteAnimation && (
+        <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-50">
+          <div className="animate-vote-pulse">
+            <div className="flex items-center gap-2 bg-cyan-accent text-page-bg px-4 py-2 rounded-full font-semibold shadow-lg text-lg">
+              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              +1 Vote
+            </div>
+          </div>
         </div>
       )}
     </div>
