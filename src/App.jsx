@@ -44,9 +44,9 @@ function App() {
         <Header />
 
         {/* Main Content */}
-        <main className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <main className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Left Column: Form + Stats */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="md:col-span-1 space-y-6">
             <SubmissionForm
               sessionId={sessionId}
               onSubmit={addSubmission}
@@ -60,7 +60,7 @@ function App() {
           </div>
 
           {/* Right Column: Word Cloud */}
-          <div className="lg:col-span-2">
+          <div className="md:col-span-1 lg:col-span-2">
             <WordCloudVisualization
               phrases={phrases}
               votedPhrases={votedPhrases}

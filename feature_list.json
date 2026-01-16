@@ -1145,7 +1145,7 @@
       "Step 1: Resize viewport to 768px width",
       "Step 2: Verify form and word cloud are side by side"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1221,7 +1221,7 @@
       "Step 1: Check primary text on background contrast",
       "Step 2: Verify contrast ratio is at least 4.5:1"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1230,7 +1230,7 @@
       "Step 1: Tab through interactive elements",
       "Step 2: Verify each has visible focus indicator"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
