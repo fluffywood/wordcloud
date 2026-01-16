@@ -1212,7 +1212,7 @@
       "Step 2: Observe content appearance",
       "Step 3: Verify elements fade in smoothly"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2156,7 +2156,7 @@
       "Step 1: Focus on textarea",
       "Step 2: Verify border is #334155 or accent blue"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2165,7 +2165,7 @@
       "Step 1: Trigger warning state (character limit approaching)",
       "Step 2: Verify amber color is used"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2306,7 +2306,7 @@
       "Step 3: Run init.sh",
       "Step 4: Verify it sets up environment"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",

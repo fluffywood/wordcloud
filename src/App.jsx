@@ -41,26 +41,32 @@ function App() {
     <div className="min-h-screen bg-page-bg text-text-primary">
       <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
         {/* Header */}
-        <Header />
+        <div className="animate-fade-in">
+          <Header />
+        </div>
 
         {/* Main Content */}
         <main className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Left Column: Form + Stats */}
           <div className="md:col-span-1 space-y-6">
-            <SubmissionForm
-              sessionId={sessionId}
-              onSubmit={addSubmission}
-            />
-            <StatsDashboard
-              submissions={submissions}
-              votes={votes}
-              topPhrases={topPhrases}
-              loading={loading}
-            />
+            <div className="animate-fade-in-delay-1">
+              <SubmissionForm
+                sessionId={sessionId}
+                onSubmit={addSubmission}
+              />
+            </div>
+            <div className="animate-fade-in-delay-2">
+              <StatsDashboard
+                submissions={submissions}
+                votes={votes}
+                topPhrases={topPhrases}
+                loading={loading}
+              />
+            </div>
           </div>
 
           {/* Right Column: Word Cloud */}
-          <div className="md:col-span-1 lg:col-span-2">
+          <div className="md:col-span-1 lg:col-span-2 animate-fade-in-delay-1">
             <WordCloudVisualization
               phrases={phrases}
               votedPhrases={votedPhrases}
@@ -72,10 +78,12 @@ function App() {
         </main>
 
         {/* Footer */}
-        <Footer
-          sessionId={sessionId}
-          onResetSession={resetSession}
-        />
+        <div className="animate-fade-in-delay-3">
+          <Footer
+            sessionId={sessionId}
+            onResetSession={resetSession}
+          />
+        </div>
       </div>
     </div>
   )
