@@ -1250,7 +1250,7 @@
       "Step 2: Check reset session button styling",
       "Step 3: Verify consistent button design language"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1471,7 +1471,7 @@
       "Step 9: Verify vote works on mobile",
       "Step 10: Scroll to stats, verify readable"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1539,7 +1539,7 @@
       "Step 9: Verify footer styling",
       "Step 10: Verify overall professional appearance"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1556,7 +1556,7 @@
       "Step 9: Verify dark theme throughout",
       "Step 10: Compare to desktop for consistency"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1573,7 +1573,7 @@
       "Step 9: Verify footer is visible at bottom",
       "Step 10: Verify consistent dark theme"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1607,7 +1607,7 @@
       "Step 9: Verify no off-brand colors",
       "Step 10: Verify accent colors used consistently"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1760,7 +1760,7 @@
       "Step 3: Verify all main sections visible",
       "Step 4: Take screenshot of initial state"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2047,7 +2047,7 @@
       "Step 2: Verify shadows are visible but not harsh",
       "Step 3: Verify shadows work on dark background"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2057,7 +2057,7 @@
       "Step 2: Measure gap between form and word cloud",
       "Step 3: Verify consistent spacing throughout"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
