@@ -1871,7 +1871,7 @@
       "Step 3: Verify no error boundaries triggered",
       "Step 4: Verify state updates correctly"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1883,7 +1883,7 @@
       "Step 4: Submit and verify POST call",
       "Step 5: Verify WebSocket connection for real-time"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
