@@ -882,7 +882,7 @@
       "Step 1: Inspect card/surface components",
       "Step 2: Verify background color is #141B34"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -891,7 +891,7 @@
       "Step 1: Inspect main text elements",
       "Step 2: Verify text color is #F3F4F6"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -900,7 +900,7 @@
       "Step 1: Inspect labels and descriptions",
       "Step 2: Verify secondary text color is #9CA3AF"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -937,7 +937,7 @@
       "Step 1: Trigger a validation error",
       "Step 2: Verify error text/border is #EF4444"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -946,7 +946,7 @@
       "Step 1: Make successful submission",
       "Step 2: Verify success indicator uses #10B981"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -955,7 +955,7 @@
       "Step 1: Inspect body text font-family",
       "Step 2: Verify Inter or system-ui is applied"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -964,7 +964,7 @@
       "Step 1: Inspect heading elements",
       "Step 2: Verify font-weight is bold (700)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -973,7 +973,7 @@
       "Step 1: Locate session ID in footer",
       "Step 2: Verify font-family is JetBrains Mono or monospace"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -991,7 +991,7 @@
       "Step 1: Inspect submit button",
       "Step 2: Verify border-radius is approximately 8px (rounded-lg)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1000,7 +1000,7 @@
       "Step 1: Hover over submit button",
       "Step 2: Verify background color changes on hover"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1009,7 +1009,7 @@
       "Step 1: Tab to submit button",
       "Step 2: Verify focus ring is visible"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1018,7 +1018,7 @@
       "Step 1: Inspect textarea element",
       "Step 2: Verify border is visible and styled"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1027,7 +1027,7 @@
       "Step 1: Click into textarea",
       "Step 2: Verify border color changes to accent color"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1037,7 +1037,7 @@
       "Step 2: Verify button has grayed out/muted appearance",
       "Step 3: Verify cursor shows not-allowed"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1082,7 +1082,7 @@
       "Step 1: Inspect word cloud container",
       "Step 2: Verify padding is between p-6 and p-12"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1091,7 +1091,7 @@
       "Step 1: Inspect stats dashboard",
       "Step 2: Verify card has rounded corners (rounded-xl)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1100,7 +1100,7 @@
       "Step 1: Inspect header section",
       "Step 2: Verify appropriate padding and margin"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1109,7 +1109,7 @@
       "Step 1: Inspect footer text",
       "Step 2: Verify text is muted color #6B7280"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1118,7 +1118,7 @@
       "Step 1: Trigger rate limit countdown",
       "Step 2: Verify countdown is visible and readable"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1801,7 +1801,7 @@
       "Step 2: Verify countdown is visible",
       "Step 3: Verify styling indicates 'waiting' state"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1821,7 +1821,7 @@
       "Step 2: Verify text guides user on what to submit",
       "Step 3: Verify example is provided"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1830,7 +1830,7 @@
       "Step 1: Read header/subtitle text",
       "Step 2: Verify it explains to submit ideas and vote"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1977,7 +1977,7 @@
       "Step 2: Verify title is text-2xl to text-4xl",
       "Step 3: Verify title is bold"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1986,7 +1986,7 @@
       "Step 1: Compare title and subtitle sizing",
       "Step 2: Verify subtitle is smaller font size"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
