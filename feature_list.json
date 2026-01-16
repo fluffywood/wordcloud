@@ -1653,7 +1653,7 @@
       "Step 4: Try typing 201st character",
       "Step 5: Verify character is blocked or counter goes red"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1703,7 +1703,7 @@
       "Step 4: Verify can fetch data from submissions table",
       "Step 5: Verify can insert data to submissions table"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1714,7 +1714,7 @@
       "Step 3: Verify import.meta.env.VITE_SUPABASE_ANON_KEY is defined",
       "Step 4: Verify Supabase client initializes correctly"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1850,7 +1850,7 @@
       "Step 3: Submit, vote, navigate",
       "Step 4: Verify no red errors in console"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1860,7 +1860,7 @@
       "Step 2: Use application normally",
       "Step 3: Verify no unexpected warnings"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1967,7 +1967,7 @@
       "Step 2: During loading, verify 'Submitting...' or spinner",
       "Step 3: During rate limit, verify disabled state"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2234,7 +2234,7 @@
       "Step 2: Run git status",
       "Step 3: Verify repository is valid"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2244,7 +2244,7 @@
       "Step 2: Verify it contains project description",
       "Step 3: Verify it contains setup/run instructions"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2295,7 +2295,7 @@
       "Step 2: Verify server starts",
       "Step 3: Verify accessible at localhost:5173"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
