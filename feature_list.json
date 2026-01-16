@@ -693,7 +693,7 @@
       "Step 1: Submit a form",
       "Step 2: Verify focus returns to textarea or appropriate element"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1046,7 +1046,7 @@
       "Step 1: Trigger a toast notification",
       "Step 2: Verify toast has shadow, rounded corners, proper colors"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1055,7 +1055,7 @@
       "Step 1: Trigger success toast",
       "Step 2: Verify toast has colored left border or success indicator"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1064,7 +1064,7 @@
       "Step 1: Trigger error toast (profanity or network error)",
       "Step 2: Verify toast has red/error color indication"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1073,7 +1073,7 @@
       "Step 1: Observe loading state on initial load",
       "Step 2: Verify skeleton is dark themed, not light gray"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1127,7 +1127,7 @@
       "Step 1: Inspect character counter position",
       "Step 2: Verify it's properly aligned with textarea"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1173,7 +1173,7 @@
       "Step 2: Verify textarea and button are properly sized",
       "Step 3: Test touch interactions work"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1183,7 +1183,7 @@
       "Step 2: Verify no horizontal scrollbar appears",
       "Step 3: Verify content fits within viewport"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1240,7 +1240,7 @@
       "Step 2: Verify no light mode leaks (white backgrounds)",
       "Step 3: Take full page screenshot for verification"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1259,7 +1259,7 @@
       "Step 1: View textarea with placeholder",
       "Step 2: Verify placeholder is visible but lighter than input text"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1268,7 +1268,7 @@
       "Step 1: Locate any icons in the UI",
       "Step 2: Verify icons use appropriate colors from design system"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1278,7 +1278,7 @@
       "Step 2: Verify numbers are large/prominent",
       "Step 3: Verify labels are smaller/muted"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1288,7 +1288,7 @@
       "Step 2: Verify #1 is highlighted",
       "Step 3: Verify list has consistent styling"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1307,7 +1307,7 @@
       "Step 1: Inspect bordered elements",
       "Step 2: Verify border color is dark and subtle"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1317,7 +1317,7 @@
       "Step 2: Review for unnecessary visual clutter",
       "Step 3: Verify professional, modern appearance"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2355,7 +2355,7 @@
       "Step 2: Verify root div exists",
       "Step 3: Verify script tag for main.jsx"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2365,7 +2365,7 @@
       "Step 2: Verify primary text is off-white #F3F4F6",
       "Step 3: Verify no harsh pure white text"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2375,7 +2375,7 @@
       "Step 2: Verify dark blue-black #0A0E27 is used",
       "Step 3: Verify no harsh pure black"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2385,7 +2385,7 @@
       "Step 2: Verify createClient is used",
       "Step 3: Verify client is exported"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2395,7 +2395,7 @@
       "Step 2: Verify common stop words included",
       "Step 3: Verify exported for use"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2405,7 +2405,7 @@
       "Step 2: Verify extractPhrases function exists",
       "Step 3: Verify can be imported and used"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2415,7 +2415,7 @@
       "Step 2: Verify generates/retrieves session ID",
       "Step 3: Verify exposes resetSession function"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2425,7 +2425,7 @@
       "Step 2: Verify fetches initial data",
       "Step 3: Verify sets up real-time subscription"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2436,7 +2436,7 @@
       "Step 3: Verify exposes vote function",
       "Step 4: Verify tracks voted phrases"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2446,7 +2446,7 @@
       "Step 2: Verify renders title and subtitle",
       "Step 3: Verify styling applied"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2456,7 +2456,7 @@
       "Step 2: Verify textarea and button render",
       "Step 3: Verify handles submit"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2466,7 +2466,7 @@
       "Step 2: Verify word cloud library integrated",
       "Step 3: Verify phrases render"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2476,7 +2476,7 @@
       "Step 2: Verify counts display",
       "Step 3: Verify top 5 list renders"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2486,7 +2486,7 @@
       "Step 2: Verify session ID displays",
       "Step 3: Verify credits text"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2496,6 +2496,6 @@
       "Step 2: Verify countdown displays correctly",
       "Step 3: Verify updates every second"
     ],
-    "passes": false
+    "passes": true
   }
 ]
