@@ -33,33 +33,6 @@ A real-time, collaborative word cloud application for live stream audiences to s
 
 ### Setup
 
-1. **Clone and navigate to the project**:
-   ```bash
-   cd autonomous-coding/generations/coding_challenge_word_cloud
-   ```
-
-2. **Run the setup script**:
-   ```bash
-   ./init.sh
-   ```
-
-   This will:
-   - Create the `.env` file with Supabase credentials
-   - Install all dependencies
-   - Configure Tailwind CSS
-
-3. **Start the development server**:
-   ```bash
-   npm run dev
-   ```
-
-4. **Open in browser**:
-   Navigate to [http://localhost:5173](http://localhost:5173)
-
-### Manual Setup (Alternative)
-
-If you prefer manual setup:
-
 ```bash
 # Install dependencies
 npm install
@@ -109,7 +82,7 @@ npm run dev
 
 ## Database Schema
 
-The Supabase database is **pre-configured** with:
+The Supabase database needs tables:
 
 ### `submissions` table
 - `id`: UUID (primary key)
