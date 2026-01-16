@@ -1334,7 +1334,7 @@
       "Step 9: Verify 'machine', 'learning', 'app' appear in word cloud",
       "Step 10: Verify phrase extraction worked correctly"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1352,7 +1352,7 @@
       "Step 10: Verify 'already voted' toast appears",
       "Step 11: Verify no duplicate vote in database"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1386,7 +1386,7 @@
       "Step 9: Verify voted phrases still highlighted",
       "Step 10: Verify cannot vote on same phrases again"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1771,7 +1771,7 @@
       "Step 3: Verify high-score phrases are larger",
       "Step 4: Verify low-score phrases are smaller"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1781,7 +1781,7 @@
       "Step 2: Compare voted vs unvoted phrase styling",
       "Step 3: Verify clear visual distinction (color/opacity)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1811,7 +1811,7 @@
       "Step 2: Observe button during loading",
       "Step 3: Verify spinner or loading animation appears"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1915,7 +1915,7 @@
       "Step 2: Load application",
       "Step 3: Verify empty state message in word cloud area"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2195,7 +2195,7 @@
       "Step 2: Verify title, description meta tags",
       "Step 3: Verify og: tags for social sharing"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2205,7 +2205,7 @@
       "Step 2: Verify favicon is displayed",
       "Step 3: Verify favicon is not default Vite icon (if customized)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2214,7 +2214,7 @@
       "Step 1: Check browser tab title",
       "Step 2: Verify it describes the app"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
