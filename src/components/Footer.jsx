@@ -18,7 +18,7 @@ export default function Footer({ sessionId, onResetSession }) {
           </code>
           <button
             onClick={onResetSession}
-            className="text-sm text-text-muted hover:text-primary-blue transition-colors duration-200 underline underline-offset-2"
+            className="text-sm text-text-muted hover:text-primary-blue transition-colors duration-200 underline underline-offset-2 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:ring-offset-2 focus:ring-offset-surface rounded"
             aria-label="Reset session"
           >
             Reset

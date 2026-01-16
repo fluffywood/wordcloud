@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState, useEffect, useRef } from 'react'
 import ReactWordcloud from 'react-wordcloud'
 import 'tippy.js/dist/tippy.css'
 import 'tippy.js/animations/scale.css'
@@ -14,6 +14,14 @@ export default function WordCloudVisualization({
   loading,
 }) {
   const [hoveredWord, setHoveredWord] = useState(null)
+
+  // Use ref to hold the latest onVote callback
+  const onVoteRef = useRef(onVote)
+
+  // Keep ref updated
+  useEffect(() => {
+    onVoteRef.current = onVote
+  })
 
   // Transform phrases data for react-wordcloud
   const words = useMemo(() => {
@@ -42,9 +50,11 @@ export default function WordCloudVisualization({
 
   // Callbacks for word cloud interactions
   const callbacks = useMemo(() => ({
-    onWordClick: (word) => {
-      // Always call onVote - it handles both new votes and duplicate attempts
-      onVote(word.text)
+    onWordClick: async (word) => {
+      // Call onVote using ref - it handles both new votes and duplicate attempts
+      // The word cloud has built-in transition animation (transitionDuration: 500)
+      // which provides visual feedback when word sizes change after voting
+      await onVoteRef.current(word.text)
     },
     onWordMouseOver: (word) => {
       setHoveredWord(word)
@@ -77,7 +87,7 @@ export default function WordCloudVisualization({
     getWordTooltip: (word) => {
       return `${word.mentions || 0} mentions, ${word.votes || 0} votes`
     },
-  }), [words, votedPhrases, hasVoted, onVote])
+  }), [words, votedPhrases, hasVoted])
 
   // Empty state
   if (!loading && (!words || words.length === 0)) {
@@ -132,6 +142,8 @@ export default function WordCloudVisualization({
       <div
         className="min-h-[400px] lg:min-h-[500px] rounded-lg overflow-hidden"
         style={{ cursor: 'pointer' }}
+        role="img"
+        aria-label={`Word cloud showing ${words.length} community idea phrases. Click any phrase to vote for it.`}
       >
         <ReactWordcloud
           words={words}
