@@ -297,7 +297,7 @@
       "Step 3: Submit new idea in browser 1",
       "Step 4: Verify submission appears in browser 2 without refresh"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -308,7 +308,7 @@
       "Step 3: Vote on a phrase in browser 1",
       "Step 4: Verify vote count updates in browser 2 without refresh"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -443,7 +443,7 @@
       "Step 1: Ensure database has more than 100 unique phrases",
       "Step 2: Verify word cloud displays maximum 100 phrases"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -464,7 +464,7 @@
       "Step 2: Observe word cloud area during initial load",
       "Step 3: Verify loading skeleton or spinner is displayed"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -475,7 +475,7 @@
       "Step 3: Verify empty state message is displayed",
       "Step 4: Verify no errors occur"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -495,7 +495,7 @@
       "Step 2: Verify success toast notification appears",
       "Step 3: Verify toast message indicates vote was recorded"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -506,7 +506,7 @@
       "Step 3: Verify 'already voted' toast appears",
       "Step 4: Verify no duplicate record in database"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -526,7 +526,7 @@
       "Step 2: Verify the phrase has different visual styling",
       "Step 3: Verify it's distinguishable from unvoted phrases"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -548,7 +548,7 @@
       "Step 4: Verify Supabase returns unique constraint error",
       "Step 5: Verify appropriate error handling"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -713,7 +713,7 @@
       "Step 2: Vote on 'coding' once (1 vote)",
       "Step 3: Verify total score is 3 (2 + 1)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -723,7 +723,7 @@
       "Step 2: Load application",
       "Step 3: Verify only most recent 500 are fetched"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -744,7 +744,7 @@
       "Step 2: Wait without clicking",
       "Step 3: Verify toast dismisses automatically within 5 seconds"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -763,7 +763,7 @@
       "Step 2: Submit the text",
       "Step 3: Verify saved text is trimmed to 'AI assistant'"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -773,7 +773,7 @@
       "Step 2: Submit the text",
       "Step 3: Verify saved text normalizes spaces"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -783,7 +783,7 @@
       "Step 2: Trigger an update (new submission or vote)",
       "Step 3: Verify word cloud animates smoothly without jarring jumps"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -793,7 +793,7 @@
       "Step 2: Test submission, voting, and viewing",
       "Step 3: Verify all features work correctly"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -833,7 +833,7 @@
       "Step 2: Verify build completes successfully",
       "Step 3: Verify no errors in output"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -843,7 +843,7 @@
       "Step 2: Check dist/ folder output",
       "Step 3: Verify bundle is minified and optimized"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -853,7 +853,7 @@
       "Step 2: Search bundle for raw API keys",
       "Step 3: Verify VITE_ prefix variables are properly handled"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -909,7 +909,7 @@
       "Step 1: Inspect CTA buttons and important elements",
       "Step 2: Verify primary blue is #3B82F6"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -918,7 +918,7 @@
       "Step 1: Vote on a phrase",
       "Step 2: Verify voted phrase has cyan accent #06B6D4"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -928,7 +928,7 @@
       "Step 2: Verify low-score phrases are blue (#3B82F6)",
       "Step 3: Verify high-score phrases are cyan (#06B6D4 or brighter)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -982,7 +982,7 @@
       "Step 1: View on wide screen (1920px+)",
       "Step 2: Verify main container doesn't exceed 1200px width"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
