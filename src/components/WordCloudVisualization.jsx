@@ -15,6 +15,7 @@ export default function WordCloudVisualization({
 }) {
   const [hoveredWord, setHoveredWord] = useState(null)
   const [voteAnimation, setVoteAnimation] = useState(null) // { x, y, text } for animation
+  const wordCloudRef = useRef(null)
 
   // Use ref to hold the latest onVote callback
   const onVoteRef = useRef(onVote)
@@ -23,6 +24,50 @@ export default function WordCloudVisualization({
   useEffect(() => {
     onVoteRef.current = onVote
   })
+
+  // Add ARIA labels and keyboard support to word cloud text elements for accessibility
+  useEffect(() => {
+    if (!wordCloudRef.current || loading) return
+
+    // Small delay to ensure SVG is rendered
+    const timer = setTimeout(() => {
+      const container = wordCloudRef.current
+      const textElements = container.querySelectorAll('svg text')
+
+      textElements.forEach((textEl) => {
+        const word = textEl.textContent
+        if (word) {
+          // Find the phrase data for this word
+          const phraseData = phrases?.find(p => p.text === word)
+          const mentions = phraseData?.mentions || 0
+          const votes = phraseData?.votes || 0
+          const isVoted = votedPhrases?.includes(word)
+
+          // Set ARIA attributes for accessibility
+          textEl.setAttribute('role', 'button')
+          textEl.setAttribute('aria-label', `${word}: ${mentions} mentions, ${votes} votes. ${isVoted ? 'You voted for this.' : 'Click to vote.'}`)
+          textEl.setAttribute('tabindex', '0')
+
+          // Add keyboard event listener for Enter and Space keys
+          // Remove existing listener to prevent duplicates
+          textEl.removeEventListener('keydown', textEl._keyHandler)
+          textEl._keyHandler = async (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              // Show vote animation
+              setVoteAnimation({ text: word })
+              setTimeout(() => setVoteAnimation(null), 1500)
+              // Trigger vote
+              await onVoteRef.current(word)
+            }
+          }
+          textEl.addEventListener('keydown', textEl._keyHandler)
+        }
+      })
+    }, 600) // Wait for word cloud animation to complete
+
+    return () => clearTimeout(timer)
+  }, [phrases, votedPhrases, loading])
 
   // Transform phrases data for react-wordcloud
   const words = useMemo(() => {
@@ -148,9 +193,10 @@ export default function WordCloudVisualization({
 
       {/* Word cloud container */}
       <div
+        ref={wordCloudRef}
         className="min-h-[400px] lg:min-h-[500px] rounded-lg overflow-hidden"
         style={{ cursor: 'pointer' }}
-        role="img"
+        role="region"
         aria-label={`Word cloud showing ${words.length} community idea phrases. Click any phrase to vote for it.`}
       >
         <ReactWordcloud

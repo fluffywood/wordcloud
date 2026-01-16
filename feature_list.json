@@ -684,7 +684,7 @@
       "Step 1: Inspect word cloud elements",
       "Step 2: Verify ARIA labels are present on clickable phrases"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1488,7 +1488,7 @@
       "Step 9: Press Enter on a phrase to vote",
       "Step 10: Verify vote works via keyboard"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2017,7 +2017,7 @@
       "Step 3: Verify focus indicators on phrases",
       "Step 4: Press Enter to vote on focused phrase"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
