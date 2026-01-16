@@ -130,7 +130,7 @@ export default function SubmissionForm({ sessionId, onSubmit }) {
   const isDisabled = isSubmitting || isRateLimited
 
   return (
-    <div className="bg-surface rounded-xl p-6 border border-border-default">
+    <div className="bg-surface hover:bg-surface-elevated rounded-xl p-6 border border-border-default transition-colors duration-200">
       <h2 className="text-xl font-semibold text-text-primary mb-4">
         Submit Your Idea
       </h2>

@@ -92,7 +92,7 @@ export default function WordCloudVisualization({
   // Empty state
   if (!loading && (!words || words.length === 0)) {
     return (
-      <div className="bg-surface rounded-xl p-8 border border-border-default min-h-[400px] flex items-center justify-center">
+      <div className="bg-surface hover:bg-surface-elevated rounded-xl p-8 border border-border-default min-h-[400px] flex items-center justify-center transition-colors duration-200">
         <div className="text-center">
           <svg
             className="w-16 h-16 mx-auto text-text-muted mb-4"
@@ -121,14 +121,14 @@ export default function WordCloudVisualization({
   // Loading state
   if (loading) {
     return (
-      <div className="bg-surface rounded-xl p-8 border border-border-default min-h-[400px]">
+      <div className="bg-surface hover:bg-surface-elevated rounded-xl p-8 border border-border-default min-h-[400px] transition-colors duration-200">
         <WordCloudSkeleton />
       </div>
     )
   }
 
   return (
-    <div className="bg-surface rounded-xl p-6 border border-border-default">
+    <div className="bg-surface hover:bg-surface-elevated rounded-xl p-6 border border-border-default transition-colors duration-200">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold text-text-primary">
           Community Ideas

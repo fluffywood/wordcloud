@@ -675,7 +675,7 @@
       "Step 2: Verify focus moves through textarea, submit button, etc.",
       "Step 3: Verify all interactive elements are reachable"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2147,7 +2147,7 @@
       "Step 1: Hover over card or button",
       "Step 2: Verify background changes to #1A2342 or similar"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
