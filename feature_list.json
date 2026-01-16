@@ -423,7 +423,7 @@
       "Step 2: Vote on that phrase",
       "Step 3: Verify phrase size increases (score increased)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -617,7 +617,7 @@
       "Step 2: Vote on a phrase",
       "Step 3: Verify vote count increments without page refresh"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
