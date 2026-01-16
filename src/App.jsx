@@ -4,6 +4,7 @@ import SubmissionForm from './components/SubmissionForm'
 import WordCloudVisualization from './components/WordCloudVisualization'
 import StatsDashboard from './components/StatsDashboard'
 import Footer from './components/Footer'
+import ScreenReaderAnnouncer from './components/ScreenReaderAnnouncer'
 import { toast } from './components/CustomToast'
 import { useSession } from './hooks/useSession'
 import { useSubmissions } from './hooks/useSubmissions'
@@ -39,6 +40,9 @@ function App() {
 
   return (
     <div className="min-h-screen bg-page-bg text-text-primary">
+      {/* Screen reader announcements for new submissions and votes */}
+      <ScreenReaderAnnouncer submissions={submissions} votes={votes} />
+
       <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="animate-fade-in">

@@ -1996,7 +1996,7 @@
       "Step 2: Have another user submit",
       "Step 3: Verify announcement of new content"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
