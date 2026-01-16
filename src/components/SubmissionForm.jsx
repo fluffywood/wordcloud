@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import RateLimitCountdown from './RateLimitCountdown'
 import { containsProfanity, getProfanityErrorMessage } from '../lib/profanityFilter'
 import { canSubmit, recordSubmission } from '../utils/rateLimiting'
+import { toast } from './CustomToast'
 
 const MAX_CHARS = 200
 const MIN_CHARS = 3
@@ -110,7 +111,23 @@ export default function SubmissionForm({ sessionId, onSubmit }) {
         setError(result.error || 'Failed to submit idea')
       }
     } catch (err) {
-      setError('Something went wrong')
+      // Check if it's a network error
+      const isNetworkError = err.message?.toLowerCase().includes('network') ||
+                             err.message?.toLowerCase().includes('fetch') ||
+                             err.message?.toLowerCase().includes('connection') ||
+                             err.name === 'TypeError' ||
+                             !navigator.onLine
+
+      if (isNetworkError) {
+        setError('Network error. Please check your connection.')
+        // Show toast with retry option
+        toast.networkError('Network error. Please check your connection.', () => {
+          handleSubmit(new Event('submit'))
+        })
+      } else {
+        setError('Something went wrong')
+        toast.error('Something went wrong. Please try again.')
+      }
       console.error(err)
     } finally {
       setIsSubmitting(false)

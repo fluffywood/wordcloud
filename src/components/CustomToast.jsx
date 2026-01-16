@@ -4,15 +4,16 @@ import { useState, useEffect, useCallback } from 'react'
 let listeners = []
 let toastId = 0
 
-function emitToast(message, type) {
-  const toast = { id: ++toastId, message, type }
+function emitToast(message, type, onRetry = null) {
+  const toast = { id: ++toastId, message, type, onRetry }
   listeners.forEach(listener => listener(toast))
 }
 
 // Toast API
 export const toast = {
   success: (message) => emitToast(message, 'success'),
-  error: (message) => emitToast(message, 'error'),
+  error: (message, onRetry = null) => emitToast(message, 'error', onRetry),
+  networkError: (message, onRetry) => emitToast(message || 'Network error. Please check your connection.', 'error', onRetry),
 }
 
 // Toast Container Component
@@ -88,6 +89,18 @@ export function ToastContainer() {
             </svg>
           )}
           <span className="text-sm font-medium flex-1">{t.message}</span>
+          {t.onRetry && (
+            <button
+              onClick={() => {
+                t.onRetry()
+                dismissToast(t.id)
+              }}
+              className="ml-2 px-3 py-1 rounded bg-primary-blue hover:bg-electric-blue text-white text-xs font-semibold transition-colors flex-shrink-0"
+              aria-label="Retry"
+            >
+              Retry
+            </button>
+          )}
           <button
             onClick={() => dismissToast(t.id)}
             className="ml-2 p-1 rounded hover:bg-elevated transition-colors flex-shrink-0"
