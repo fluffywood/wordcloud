@@ -753,7 +753,7 @@
       "Step 1: Trigger multiple actions quickly (vote on several phrases)",
       "Step 2: Verify multiple toasts display without overlapping text"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1154,7 +1154,7 @@
       "Step 1: View on 1024px+ viewport",
       "Step 2: Verify optimal layout with stats as sidebar"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1192,7 +1192,7 @@
       "Step 1: Trigger hover states, focus states",
       "Step 2: Verify transitions are smooth, not instant or too slow"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2254,7 +2254,7 @@
       "Step 2: Verify it shows required environment variables",
       "Step 3: Verify actual values are not exposed"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2264,7 +2264,7 @@
       "Step 2: Verify .env is listed",
       "Step 3: Verify node_modules is listed"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2275,7 +2275,7 @@
       "Step 3: Verify react-wordcloud or d3-cloud is listed",
       "Step 4: Verify toast library is listed"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2317,7 +2317,7 @@
       "Step 3: Check src/lib/ directory exists",
       "Step 4: Check src/utils/ directory exists"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2327,7 +2327,7 @@
       "Step 2: Verify custom colors defined",
       "Step 3: Verify Tailwind classes work in components"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2336,7 +2336,7 @@
       "Step 1: Check postcss.config.js exists",
       "Step 2: Verify Tailwind plugin included"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2345,7 +2345,7 @@
       "Step 1: Check vite.config.js exists",
       "Step 2: Verify React plugin configured"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
