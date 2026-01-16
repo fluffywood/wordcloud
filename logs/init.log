@@ -1,0 +1,49 @@
+
+[0;34m============================================[0m
+[0;34m  Live Stream Word Cloud - Setup[0m
+[0;34m============================================[0m
+
+[0;32m[✓][0m Node.js v20.8.0 detected
+[0;32m[✓][0m npm 10.1.0 detected
+[0;32m[✓][0m .env file already exists
+[0;32m[✓][0m Installing dependencies...
+npm ERR! code ERESOLVE
+npm ERR! ERESOLVE could not resolve
+npm ERR! 
+npm ERR! While resolving: react-wordcloud@1.2.7
+npm ERR! Found: react@18.3.1
+npm ERR! node_modules/react
+npm ERR!   peer react@"^18.3.1" from react-dom@18.3.1
+npm ERR!   node_modules/react-dom
+npm ERR!     peer react-dom@">=16" from react-hot-toast@2.6.0
+npm ERR!     node_modules/react-hot-toast
+npm ERR!       react-hot-toast@"^2.4.1" from the root project
+npm ERR!     peer react-dom@"^18.0.0 || ^19.0.0 || ^19.0.0-rc" from sonner@2.0.7
+npm ERR!     node_modules/sonner
+npm ERR!       sonner@"^2.0.7" from the root project
+npm ERR!     1 more (the root project)
+npm ERR!   peer react@">=16" from react-hot-toast@2.6.0
+npm ERR!   node_modules/react-hot-toast
+npm ERR!     react-hot-toast@"^2.4.1" from the root project
+npm ERR!   2 more (sonner, the root project)
+npm ERR! 
+npm ERR! Could not resolve dependency:
+npm ERR! peer react@"^16.13.0" from react-wordcloud@1.2.7
+npm ERR! node_modules/react-wordcloud
+npm ERR!   react-wordcloud@"^1.2.7" from the root project
+npm ERR! 
+npm ERR! Conflicting peer dependency: react@16.14.0
+npm ERR! node_modules/react
+npm ERR!   peer react@"^16.13.0" from react-wordcloud@1.2.7
+npm ERR!   node_modules/react-wordcloud
+npm ERR!     react-wordcloud@"^1.2.7" from the root project
+npm ERR! 
+npm ERR! Fix the upstream dependency conflict, or retry
+npm ERR! this command with --force or --legacy-peer-deps
+npm ERR! to accept an incorrect (and potentially broken) dependency resolution.
+npm ERR! 
+npm ERR! 
+npm ERR! For a full report see:
+npm ERR! C:\Users\colem\AppData\Local\npm-cache\_logs\2026-01-16T03_21_46_850Z-eresolve-report.txt
+
+npm ERR! A complete log of this run can be found in: C:\Users\colem\AppData\Local\npm-cache\_logs\2026-01-16T03_21_46_850Z-debug-0.log
