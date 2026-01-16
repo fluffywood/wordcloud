@@ -1403,7 +1403,7 @@
       "Step 9: Clear localStorage (simulate rate limit bypass)",
       "Step 10: Verify can submit again"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1420,7 +1420,7 @@
       "Step 9: Submit clean text",
       "Step 10: Verify clean text goes through successfully"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1624,7 +1624,7 @@
       "Step 9: View stats dashboard",
       "Step 10: Overall UX is intuitive and smooth"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1641,7 +1641,7 @@
       "Step 9: Verify seamless continuation",
       "Step 10: Verify data persists correctly"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
