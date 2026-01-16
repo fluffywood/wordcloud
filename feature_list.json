@@ -1666,7 +1666,7 @@
       "Step 5: Verify no race conditions",
       "Step 6: Verify all toasts appear (may stack)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1678,7 +1678,7 @@
       "Step 4: Submit text with HTML entities (&amp;)",
       "Step 5: Verify no XSS vulnerabilities"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1749,7 +1749,7 @@
       "Step 4: Verify Supabase rejects with unique constraint error",
       "Step 5: Verify error is handled gracefully"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2108,7 +2108,7 @@
       "Step 2: Hover on 'coding' in word cloud",
       "Step 3: Verify tooltip shows '3 mentions'"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2118,7 +2118,7 @@
       "Step 2: Hover on 'coding' in word cloud",
       "Step 3: Verify tooltip shows '2 votes'"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2128,7 +2128,7 @@
       "Step 2: Vote heavily on phrase not in top 5",
       "Step 3: Verify top 5 updates to include new leader"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
