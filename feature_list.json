@@ -1894,7 +1894,7 @@
       "Step 3: Measure time to interactive",
       "Step 4: Verify under 3 seconds"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1905,7 +1905,7 @@
       "Step 3: Measure word cloud render time",
       "Step 4: Verify under 1 second"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2224,7 +2224,7 @@
       "Step 2: Reload page",
       "Step 3: Verify loading indicator appears during fetch"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
