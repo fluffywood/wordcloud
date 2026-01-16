@@ -1,116 +1,100 @@
-# Claude Progress Report - Session 3 Final
+# Claude Progress Report - Session 4
 
 ## Date: January 15, 2025
 
 ## Summary
-This is the THIRD session in the autonomous development process. Made significant progress: implemented inline success message feature and verified 14 additional tests through Puppeteer browser automation.
+This is the FOURTH session in the autonomous development process. Fixed critical profanity filter bug and verified 6 additional tests.
 
 ## Completed Tasks This Session
 
-### 1. Implemented Success Notification Feature ✅
-- Attempted multiple toast library approaches (react-hot-toast, sonner, custom implementations)
-- Toast libraries didn't render correctly in Puppeteer test environment
-- **Final Solution:** Implemented inline success message in SubmissionForm component
-- Success message shows "Idea submitted successfully!" with green checkmark icon
-- Auto-dismisses after 5 seconds
-- Verified working with Puppeteer screenshot
+### 1. Fixed Profanity Filter Bug ✅
+- The profanity filter wasn't catching obfuscated variations like "f*ck"
+- Root cause: Regex pattern [a-z0-9] didn't include literal asterisk (*) character
+- Fix: Updated pattern to [a-z0-9*@$!] to match common substitution symbols
+- Verified: "f*ck" and "fvck" are now properly blocked
 
-### 2. Verified 14 Additional Tests ✅
-- Submit button loading state (code review - spinner + "Submitting..." text)
-- Rate limit expiry (button re-enables when localStorage cleared)
-- Rate limit persistence across page refresh
-- Initial data loading from Supabase
-- Word cloud displays phrases with font size based on score
-- Word cloud updates when new submission arrives
-- Word cloud filters phrases with score less than 2
-- Phrase extraction generates 1-word n-grams
-- Phrase extraction generates 2-word n-grams
-- Phrase extraction generates 3-word n-grams
-- Phrase extraction converts text to lowercase
-- Word cloud updates when vote is recorded
-- Stats update in real-time when vote is cast
+### 2. Updated Vote Handling for Duplicate Feedback ✅
+- Modified WordCloudVisualization to always call onVote (removed hasVoted check)
+- Updated App.jsx handleVote to check hasVoted and show error toast immediately
+- Note: Toast notifications don't render in Puppeteer screenshots (known issue from Session 3)
+
+### 3. Verified 6 Additional Tests ✅
+- Submission over 200 characters is prevented (via truncation in handleChange)
+- Profanity filter catches variations (f*ck, fvck, etc)
+- Phrase extraction filters out stop words
+- Phrase extraction removes punctuation
+- Phrase extraction preserves hyphens in compound words
+- Phrase extraction filters words shorter than 3 characters
 
 ## Test Status
-- **Passing Tests:** 54
-- **Remaining Tests:** 182
+- **Passing Tests:** 60
+- **Remaining Tests:** 176
 - **Total Tests:** 236
-- **Progress:** 22.9%
-- **Progress This Session:** +14 tests (from 40 to 54)
+- **Progress:** 25.4%
+- **Progress This Session:** +6 tests (from 54 to 60)
 
 ## Code Changes Made This Session
 
-### 1. `src/components/SubmissionForm.jsx`:
-- Added `successMessage` state variable
-- Added useEffect to auto-hide success message after 5 seconds
-- Added green success message UI below textarea with checkmark icon
-- Message renders when submission is successful
+### 1. `src/lib/profanityFilter.js`:
+- Changed regex pattern generation to use placeholder approach
+- Pattern now matches literal asterisks and common substitution symbols
 
-### 2. `src/components/CustomToast.jsx`:
-- Created custom toast component with pub/sub pattern
-- Note: Not used in final solution but available for future use
+### 2. `src/App.jsx`:
+- Added hasVoted check at start of handleVote function
+- Shows error toast immediately for duplicate votes
 
-### 3. `src/main.jsx`:
-- Added ToastContainer import (from CustomToast)
+### 3. `src/components/WordCloudVisualization.jsx`:
+- Removed hasVoted check from onWordClick callback
+- Always calls onVote to allow duplicate vote feedback
 
-## Tests Marked as Passing This Session (14 new)
-41. Success toast appears on successful submission
-42. Submit button shows loading state during submission
-43. Submit button re-enables after rate limit expires
-44. Rate limit persists across page refresh
-45. Initial submissions data loads from Supabase on mount
-46. Word cloud displays phrases with font size based on score
-47. Word cloud updates when new submission arrives
-48. Word cloud filters phrases with score less than 2
-49. Phrase extraction generates 1-word n-grams
-50. Phrase extraction generates 2-word n-grams
-51. Phrase extraction generates 3-word n-grams
-52. Phrase extraction converts text to lowercase
-53. Word cloud updates when vote is recorded
-54. Stats update in real-time when vote is cast
+### 4. `feature_list.json`:
+- Marked 6 tests as passing
+
+## Tests Marked as Passing This Session (6 new)
+55. Submission over 200 characters is prevented
+56. Profanity filter catches variations (f*ck, fvck, etc)
+57. Phrase extraction filters out stop words
+58. Phrase extraction removes punctuation
+59. Phrase extraction preserves hyphens in compound words
+60. Phrase extraction filters words shorter than 3 characters
 
 ## Git Commits This Session
-- `4c48fa8` - Session 3: Implement success message and verify 45 tests (19.1%)
-- `1c510cc` - Session 3: Verify word cloud and phrase extraction tests (52/236 - 22.0%)
-- `991ff87` - Session 3: Verify voting and real-time update tests (54/236 - 22.9%)
+- `3de679c` - Session 4: Fix profanity filter and verify 6 additional tests (60/236 - 25.4%)
 
 ## Pending Work for Next Sessions
 
 ### High Priority
-1. Test profanity filter with variations (f*ck, etc.)
-2. Test duplicate vote error/warning message
-3. Test real-time sync between two browser sessions
-4. Test vote success toast notification
+1. Test vote success toast (code implemented, but not visible in Puppeteer)
+2. Test duplicate vote toast (code implemented, but not visible in Puppeteer)
+3. Test voted phrase highlighting (cyan color)
+4. Test real-time subscriptions between two browsers
+5. Test word cloud loading skeleton
 
 ### Medium Priority
-1. Test voted phrase highlighting (cyan color)
-2. Test vote animation
-3. Test word cloud maximum display (100 phrases)
-4. Test phrase extraction removes punctuation
-5. Test phrase extraction preserves hyphens
-6. Test phrase extraction filters stop words
-7. Test production build
+1. Test word cloud empty state
+2. Test top phrase highlight styling
+3. Test Supabase unique constraint on duplicate votes
+4. Test vote animation
 
 ### Style Tests to Verify
 1. Surface/card background color (#141B34)
 2. Primary text color (#F3F4F6)
 3. Blue accent colors in word cloud
 4. Submit button hover state
-5. Rate limit countdown styling
-6. Cyan accent for voted phrases
+5. Cyan accent for voted phrases
 
 ## Notes for Next Agent
 1. **DO NOT MODIFY feature_list.json descriptions** - only change "passes" to true when tests pass
 2. **Use Puppeteer MCP for validation** - screenshots are essential evidence
-3. **Success message implemented inline** - not as toast due to rendering issues in Puppeteer
-4. **Toast libraries available but not working in test environment** - CustomToast.jsx exists but Puppeteer doesn't capture the toasts properly
-5. **Rate limit is 5 minutes** - can clear localStorage for testing (`localStorage.removeItem('wordcloud_last_submission')`)
-6. **Dev server runs on port 5174** (5173 was in use)
-7. **Word cloud uses SVG** - click events need to dispatch MouseEvent on SVG text elements
-8. **Current database state** - 22 submissions, 3 votes, 3 participants
+3. **Toast notifications issue**: Toast system is implemented but doesn't render correctly in Puppeteer
+4. **Rate limit is 5 minutes** - can clear localStorage for testing (`localStorage.removeItem('wordcloud_last_submission')`)
+5. **Dev server runs on port 5173** (fixed from previous session)
+6. **Word cloud uses SVG** - click events need to dispatch MouseEvent on SVG text elements
+7. **Current database state** - 30 submissions, 7 votes, 4 participants
 
 ## Dev Server Status
-- Server running at http://localhost:5174
-- Background task ID: ba67871
+- Server running at http://localhost:5173
+- Background task ID: bbd457e
 
 ## Session Status: COMPLETE
-54/236 tests passing (22.9%). Ready for next session to continue verification.
+60/236 tests passing (25.4%). Ready for next session to continue verification.
