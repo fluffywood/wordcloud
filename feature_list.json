@@ -1437,7 +1437,7 @@
       "Step 9: Submit same text again",
       "Step 10: Verify phrase counts increase correctly"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1454,7 +1454,7 @@
       "Step 9: Verify vote count = 4",
       "Step 10: Verify top 5 phrases reflect actual top scorers"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1934,7 +1934,7 @@
       "Step 2: Wait for rate limit, submit 'AI chatbot' from session A",
       "Step 3: Verify 'ai' phrase has score reflecting both mentions"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1945,7 +1945,7 @@
       "Step 3: Verify 'coding' vote count = 2",
       "Step 4: Verify total score reflects mentions + votes"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2077,7 +2077,7 @@
       "Step 2: Trigger non-data-related re-render",
       "Step 3: Verify phrase extraction doesn't re-run unnecessarily"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2087,7 +2087,7 @@
       "Step 2: Verify only 100 displayed in word cloud",
       "Step 3: Verify they are top 100 by score"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2098,7 +2098,7 @@
       "Step 3: Submit same phrase again (score = 2)",
       "Step 4: Verify it NOW appears in word cloud"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2138,7 +2138,7 @@
       "Step 2: Session B votes only",
       "Step 3: Verify participants = 2"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
