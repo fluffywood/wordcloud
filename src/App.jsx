@@ -20,6 +20,12 @@ function App() {
 
   // Wrap voteForPhrase to add toast notifications
   const handleVote = useCallback(async (phraseText) => {
+    // Check if already voted (client-side check for immediate feedback)
+    if (hasVoted(phraseText)) {
+      toast.error('You already voted for this!')
+      return { success: false, error: 'Already voted' }
+    }
+
     const result = await voteForPhrase(phraseText)
     if (result.success) {
       toast.success('Vote recorded!')
@@ -29,7 +35,7 @@ function App() {
       toast.error('Failed to record vote')
     }
     return result
-  }, [voteForPhrase])
+  }, [voteForPhrase, hasVoted])
 
   return (
     <div className="min-h-screen bg-page-bg text-text-primary">

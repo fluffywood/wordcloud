@@ -69,10 +69,14 @@ const PROFANITY_LIST = [
 
 // Create regex patterns for each word (case-insensitive, word boundary aware)
 const profanityPatterns = PROFANITY_LIST.map(word => {
-  // Escape special regex characters except asterisks
-  const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  // Replace asterisks with word character pattern (matches letter or number only, not spaces)
-  const pattern = escaped.replace(/\\\*/g, '[a-z0-9]')
+  // First, handle asterisks in the profanity list by replacing them with a placeholder
+  // Then escape special regex characters, then convert placeholder to character class
+  const placeholder = '___STAR___'
+  const withPlaceholder = word.replace(/\*/g, placeholder)
+  // Escape special regex characters
+  const escaped = withPlaceholder.replace(/[.+?^${}()|[\]\\]/g, '\\$&')
+  // Replace placeholder with pattern that matches: letter, number, or common substitution symbols
+  const pattern = escaped.replace(new RegExp(placeholder, 'g'), '[a-z0-9*@$!]')
   return new RegExp(`\\b${pattern}\\b`, 'i')
 })
 

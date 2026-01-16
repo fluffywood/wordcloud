@@ -134,7 +134,7 @@
       "Step 2: Verify either text is truncated or submit is disabled",
       "Step 3: Verify validation error if submitting long text"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -211,7 +211,7 @@
       "Step 3: Verify submission is blocked",
       "Step 4: Verify error message about appropriate content"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -345,7 +345,7 @@
       "Step 2: Verify 'an', 'for', 'the' are not in extracted phrases",
       "Step 3: Verify 'build', 'ai', 'web' are extracted"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -364,7 +364,7 @@
       "Step 2: Verify punctuation is removed in extracted phrases",
       "Step 3: Verify 'ai', 'coding', 'assistant' are clean"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -373,7 +373,7 @@
       "Step 1: Submit 'real-time updates'",
       "Step 2: Verify 'real-time' is preserved as single word/phrase"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -382,7 +382,7 @@
       "Step 1: Submit 'AI is on the go'",
       "Step 2: Verify 'is', 'on' are filtered out (both stop words and short)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",

@@ -43,9 +43,8 @@ export default function WordCloudVisualization({
   // Callbacks for word cloud interactions
   const callbacks = useMemo(() => ({
     onWordClick: (word) => {
-      if (!hasVoted(word.text)) {
-        onVote(word.text)
-      }
+      // Always call onVote - it handles both new votes and duplicate attempts
+      onVote(word.text)
     },
     onWordMouseOver: (word) => {
       setHoveredWord(word)
