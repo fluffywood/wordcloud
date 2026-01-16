@@ -1737,7 +1737,7 @@
       "Step 3: Verify no white flash or complete re-render",
       "Step 4: Verify smooth transition"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1924,7 +1924,7 @@
       "Step 1: Clear data",
       "Step 2: Verify stats show '0' not 'undefined' or error"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1957,7 +1957,7 @@
       "Step 4: Verify wordcloud_last_submission cleared",
       "Step 5: Verify wordcloud_voted_phrases cleared"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
