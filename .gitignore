@@ -7,6 +7,11 @@ node_modules/
 dist/
 build/
 
+# Local poll data (created automatically)
+data/*.json
+data/*.tmp
+**/.admin-key
+
 # Environment variables (contains secrets)
 .env
 .env.local

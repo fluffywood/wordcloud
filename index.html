@@ -1,29 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Live Stream Word Cloud - Submit ideas and vote on what gets built during the stream" />
-    <meta property="og:title" content="Help Decide What I Build!" />
-    <meta property="og:description" content="Submit your ideas and vote on the best ones for the live stream" />
+    <meta name="theme-color" content="#09091b" />
+    <meta name="description" content="WordFlow 实时互动词云：参与者扫码匿名回答，大屏实时生成中文词云。" />
+    <meta property="og:title" content="WordFlow · 实时互动词云" />
+    <meta property="og:description" content="扫码回答，实时生成漂亮的现场词云。" />
     <meta property="og:type" content="website" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
-    <title>Help Decide What I Build! - Live Stream Word Cloud</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%237c3aed'/%3E%3Cpath d='M15 20l8 27 9-19 9 19 8-27' fill='none' stroke='white' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+    <title>WordFlow · 实时互动词云</title>
   </head>
   <body>
     <div id="root"></div>
     <noscript>
-      <div style="background-color: #0A0E27; color: #F3F4F6; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; font-family: 'Inter', system-ui, sans-serif; text-align: center;">
-        <h1 style="color: #3B82F6; font-size: 2rem; margin-bottom: 1rem;">Help Decide What I Build!</h1>
-        <p style="color: #9CA3AF; font-size: 1.125rem; max-width: 32rem; margin-bottom: 1.5rem;">
-          This interactive word cloud application requires JavaScript to function.
-        </p>
-        <p style="color: #6B7280; font-size: 0.875rem;">
-          Please enable JavaScript in your browser settings to submit ideas and vote on what gets built during the live stream.
-        </p>
+      <div style="background:#09091b;color:#f8fafc;min-height:100vh;display:grid;place-items:center;padding:2rem;font-family:system-ui,sans-serif;text-align:center">
+        <div><h1 style="color:#a78bfa;font-size:2rem;margin-bottom:1rem">WordFlow</h1><p style="color:#9ca3af">请启用 JavaScript 后使用实时互动词云。</p></div>
       </div>
     </noscript>
     <script type="module" src="/src/main.jsx"></script>

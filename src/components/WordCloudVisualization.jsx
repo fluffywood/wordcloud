@@ -1,267 +1,149 @@
-import { useCallback, useMemo, useState, useEffect, useRef } from 'react'
-import ReactWordcloud from 'react-wordcloud'
-import 'tippy.js/dist/tippy.css'
-import 'tippy.js/animations/scale.css'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import cloud from 'd3-cloud'
 
-/**
- * Word cloud visualization component
- */
-export default function WordCloudVisualization({
-  phrases,
-  votedPhrases,
-  onVote,
-  hasVoted,
-  loading,
-}) {
-  const [hoveredWord, setHoveredWord] = useState(null)
-  const [voteAnimation, setVoteAnimation] = useState(null) // { x, y, text } for animation
-  const wordCloudRef = useRef(null)
+const COLORS = ['#fb7185', '#a78bfa', '#38bdf8', '#2dd4bf', '#fbbf24', '#818cf8', '#f472b6']
 
-  // Use ref to hold the latest onVote callback
-  const onVoteRef = useRef(onVote)
-
-  // Keep ref updated
-  useEffect(() => {
-    onVoteRef.current = onVote
-  })
-
-  // Add ARIA labels and keyboard support to word cloud text elements for accessibility
-  useEffect(() => {
-    if (!wordCloudRef.current || loading) return
-
-    // Small delay to ensure SVG is rendered
-    const timer = setTimeout(() => {
-      const container = wordCloudRef.current
-      const textElements = container.querySelectorAll('svg text')
-
-      textElements.forEach((textEl) => {
-        const word = textEl.textContent
-        if (word) {
-          // Find the phrase data for this word
-          const phraseData = phrases?.find(p => p.text === word)
-          const mentions = phraseData?.mentions || 0
-          const votes = phraseData?.votes || 0
-          const isVoted = votedPhrases?.includes(word)
-
-          // Set ARIA attributes for accessibility
-          textEl.setAttribute('role', 'button')
-          textEl.setAttribute('aria-label', `${word}: ${mentions} mentions, ${votes} votes. ${isVoted ? 'You voted for this.' : 'Click to vote.'}`)
-          textEl.setAttribute('tabindex', '0')
-
-          // Add keyboard event listener for Enter and Space keys
-          // Remove existing listener to prevent duplicates
-          textEl.removeEventListener('keydown', textEl._keyHandler)
-          textEl._keyHandler = async (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault()
-              // Show vote animation
-              setVoteAnimation({ text: word })
-              setTimeout(() => setVoteAnimation(null), 1500)
-              // Trigger vote
-              await onVoteRef.current(word)
-            }
-          }
-          textEl.addEventListener('keydown', textEl._keyHandler)
-        }
-      })
-    }, 600) // Wait for word cloud animation to complete
-
-    return () => clearTimeout(timer)
-  }, [phrases, votedPhrases, loading])
-
-  // Transform phrases data for react-wordcloud
-  const words = useMemo(() => {
-    if (!phrases || phrases.length === 0) return []
-
-    return phrases.map(phrase => ({
-      text: phrase.text,
-      value: phrase.value,
-      mentions: phrase.mentions,
-      votes: phrase.votes,
-    }))
-  }, [phrases])
-
-  // Word cloud options
-  const options = useMemo(() => ({
-    rotations: 2,
-    rotationAngles: [0, 0],
-    fontFamily: 'Inter, system-ui, sans-serif',
-    fontSizes: [16, 64],
-    fontWeight: 'bold',
-    padding: 4,
-    deterministic: true,
-    enableTooltip: true,
-    transitionDuration: 500,
-  }), [])
-
-  // Callbacks for word cloud interactions
-  const callbacks = useMemo(() => ({
-    onWordClick: async (word, event) => {
-      // Show vote animation (will appear in word cloud center)
-      setVoteAnimation({
-        text: word.text
-      })
-      // Clear animation after it plays
-      setTimeout(() => setVoteAnimation(null), 1500)
-
-      // Call onVote using ref - it handles both new votes and duplicate attempts
-      // The word cloud has built-in transition animation (transitionDuration: 500)
-      // which provides visual feedback when word sizes change after voting
-      await onVoteRef.current(word.text)
-    },
-    onWordMouseOver: (word) => {
-      setHoveredWord(word)
-    },
-    onWordMouseOut: () => {
-      setHoveredWord(null)
-    },
-    getWordColor: (word) => {
-      // Check if user has voted for this phrase
-      const isVoted = votedPhrases?.includes(word.text)
-
-      if (isVoted) {
-        return '#06B6D4' // cyan-accent for voted
-      }
-
-      // Blue gradient based on score
-      const maxValue = words.length > 0 ? Math.max(...words.map(w => w.value)) : 1
-      const ratio = word.value / maxValue
-
-      if (ratio > 0.75) {
-        return '#38BDF8' // bright-cyan
-      } else if (ratio > 0.5) {
-        return '#06B6D4' // cyan-accent
-      } else if (ratio > 0.25) {
-        return '#60A5FA' // accent-blue
-      } else {
-        return '#3B82F6' // primary-blue
-      }
-    },
-    getWordTooltip: (word) => {
-      return `${word.mentions || 0} mentions, ${word.votes || 0} votes`
-    },
-  }), [words, votedPhrases, hasVoted])
-
-  // Empty state
-  if (!loading && (!words || words.length === 0)) {
-    return (
-      <div className="bg-surface hover:bg-surface-elevated rounded-xl p-8 border border-border-default min-h-[400px] flex items-center justify-center transition-colors duration-200">
-        <div className="text-center">
-          <svg
-            className="w-16 h-16 mx-auto text-text-muted mb-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
-            />
-          </svg>
-          <h3 className="text-xl font-semibold text-text-primary mb-2">
-            No Ideas Yet
-          </h3>
-          <p className="text-text-secondary">
-            Be the first to submit an idea!
-          </p>
-        </div>
-      </div>
-    )
+function seededRandom(seed) {
+  let value = seed || 1
+  return () => {
+    value = (value * 9301 + 49297) % 233280
+    return value / 233280
   }
-
-  // Loading state
-  if (loading) {
-    return (
-      <div className="bg-surface hover:bg-surface-elevated rounded-xl p-8 border border-border-default min-h-[400px] transition-colors duration-200">
-        <WordCloudSkeleton />
-      </div>
-    )
-  }
-
-  return (
-    <div className="bg-surface hover:bg-surface-elevated rounded-xl p-6 border border-border-default transition-colors duration-200 relative">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold text-text-primary">
-          Community Ideas
-        </h2>
-        <span className="text-sm text-text-muted">
-          Click a phrase to vote
-        </span>
-      </div>
-
-      {/* Word cloud container */}
-      <div
-        ref={wordCloudRef}
-        className="min-h-[400px] lg:min-h-[500px] rounded-lg overflow-hidden"
-        style={{ cursor: 'pointer' }}
-        role="region"
-        aria-label={`Word cloud showing ${words.length} community idea phrases. Click any phrase to vote for it.`}
-      >
-        <ReactWordcloud
-          words={words}
-          options={options}
-          callbacks={callbacks}
-        />
-      </div>
-
-      {/* Hover tooltip (custom) */}
-      {hoveredWord && (
-        <div className="mt-4 p-3 bg-page-bg rounded-lg border border-border-default">
-          <p className="text-text-primary font-medium">
-            &quot;{hoveredWord.text}&quot;
-          </p>
-          <p className="text-sm text-text-secondary mt-1">
-            {hoveredWord.mentions || 0} mentions • {hoveredWord.votes || 0} votes
-            {votedPhrases?.includes(hoveredWord.text) && (
-              <span className="ml-2 text-cyan-accent">✓ You voted</span>
-            )}
-          </p>
-        </div>
-      )}
-
-      {/* Vote animation overlay - appears in center of word cloud */}
-      {voteAnimation && (
-        <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-50">
-          <div className="animate-vote-pulse">
-            <div className="flex items-center gap-2 bg-cyan-accent text-page-bg px-4 py-2 rounded-full font-semibold shadow-lg text-lg">
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              +1 Vote
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  )
 }
 
-/**
- * Loading skeleton for word cloud
- */
-function WordCloudSkeleton() {
+function hashWords(words) {
+  return [...words]
+    .sort((a, b) => a.text.localeCompare(b.text, 'zh-CN'))
+    .reduce((hash, word) => {
+      for (const character of word.text) {
+        hash = ((hash << 5) - hash + character.charCodeAt(0)) | 0
+      }
+      return hash
+    }, 17)
+}
+
+function colorForWord(text) {
+  return COLORS[Math.abs(hashWords([{ text }])) % COLORS.length]
+}
+
+export default function WordCloudVisualization({ words, loading }) {
+  const containerRef = useRef(null)
+  const [size, setSize] = useState({ width: 900, height: 520 })
+  const [placedWords, setPlacedWords] = useState([])
+
+  useEffect(() => {
+    const element = containerRef.current
+    if (!element) return undefined
+    const updateSize = () => setSize({
+      width: Math.max(320, element.clientWidth),
+      height: Math.max(360, element.clientHeight),
+    })
+    updateSize()
+    const observer = new ResizeObserver(updateSize)
+    observer.observe(element)
+    return () => observer.disconnect()
+  }, [])
+
+  const layoutWords = useMemo(() => {
+    if (!words.length) return []
+    const values = words.map((word) => word.value)
+    const max = Math.max(...values)
+    const min = Math.min(...values)
+    const visibleCount = Math.min(words.length, 80)
+    const density = Math.min(1, Math.max(0, (visibleCount - 5) / 55))
+    const maxFont = Math.max(44, Math.min(92, size.width / 8.5) - density * 28)
+    const minFont = Math.max(14, (size.width < 560 ? 19 : 23) - density * 8)
+
+    return words.slice(0, 80).map((word) => {
+      const ratio = max === min ? (visibleCount === 1 ? 0.72 : 0) : (word.value - min) / (max - min)
+      return {
+        ...word,
+        color: colorForWord(word.text),
+        size: Math.round(minFont + Math.sqrt(ratio) * (maxFont - minFont)),
+      }
+    })
+  }, [size.width, words])
+
+  useEffect(() => {
+    if (!layoutWords.length) {
+      setPlacedWords([])
+      return undefined
+    }
+
+    let cancelled = false
+    let activeLayout
+    const runLayout = (scale = 1) => {
+      activeLayout = cloud()
+        .size([size.width, size.height])
+        .words(layoutWords.map((word) => ({ ...word })))
+        .padding(Math.max(2, Math.round((size.width < 560 ? 5 : 9) * scale)))
+        .rotate(() => 0)
+        .font('Inter, PingFang SC, Microsoft YaHei, sans-serif')
+        .fontWeight(700)
+        .fontSize((word) => Math.max(9, Math.round(word.size * scale)))
+        .spiral('archimedean')
+        .random(seededRandom(Math.abs(hashWords(layoutWords))))
+        .on('end', (nextWords) => {
+          if (cancelled) return
+          if (nextWords.length < layoutWords.length && scale > 0.56) {
+            runLayout(scale - 0.1)
+          } else {
+            setPlacedWords(nextWords)
+          }
+        })
+      activeLayout.start()
+    }
+
+    runLayout()
+    return () => {
+      cancelled = true
+      activeLayout?.stop()
+    }
+  }, [layoutWords, size.height, size.width])
+
   return (
-    <div className="animate-pulse">
-      <div className="flex items-center justify-between mb-4">
-        <div className="h-6 w-32 bg-border-default rounded" />
-        <div className="h-4 w-24 bg-border-default rounded" />
-      </div>
-      <div className="min-h-[400px] flex items-center justify-center">
-        <div className="flex flex-wrap gap-4 justify-center items-center p-8">
-          {[...Array(20)].map((_, i) => (
-            <div
-              key={i}
-              className="h-6 bg-border-default rounded"
-              style={{
-                width: `${Math.random() * 80 + 40}px`,
-                opacity: Math.random() * 0.5 + 0.5,
-              }}
-            />
+    <div className="word-cloud" ref={containerRef}>
+      {loading ? (
+        <div className="cloud-loading" aria-label="正在加载词云">
+          {[72, 44, 88, 52, 64, 38, 56].map((width, index) => (
+            <span key={width} style={{ width: `${width}px`, animationDelay: `${index * 90}ms` }} />
           ))}
         </div>
-      </div>
+      ) : placedWords.length > 0 ? (
+        <>
+          <svg viewBox={`0 0 ${size.width} ${size.height}`} role="img" aria-label={`由 ${words.length} 个不同答案组成的实时词云`}>
+            <g transform={`translate(${size.width / 2}, ${size.height / 2})`}>
+              {placedWords.map((word, index) => (
+                <text
+                  className="cloud-word"
+                  dominantBaseline="middle"
+                  fill={word.color}
+                  fontSize={word.size}
+                  fontWeight="700"
+                  key={`${word.text}-${word.value}`}
+                  style={{ animationDelay: `${Math.min(index * 28, 400)}ms` }}
+                  textAnchor="middle"
+                  transform={`translate(${word.x}, ${word.y}) rotate(${word.rotate})`}
+                >
+                  <title>{word.text} · {word.value} 次</title>
+                  {word.text}
+                </text>
+              ))}
+            </g>
+          </svg>
+          <ul className="sr-only">
+            {words.map((word) => <li key={word.text}>{word.text}，{word.value} 次</li>)}
+          </ul>
+        </>
+      ) : (
+        <div className="cloud-empty">
+          <div className="cloud-empty__art" aria-hidden="true">
+            <span>灵感</span><span>期待</span><span>✨</span><span>你的答案</span><span>创意</span>
+          </div>
+          <h3>词云正在等待第一份答案</h3>
+          <p>请参与者扫描右侧二维码，提交后会立即显示</p>
+        </div>
+      )}
     </div>
   )
 }
