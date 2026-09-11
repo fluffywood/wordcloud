@@ -1,9 +1,9 @@
-export default function StatsDashboard({ stats, topAnswers }) {
+export default function StatsDashboard({ repeatable, stats, topAnswers }) {
   return (
     <section className="stats-panel glass-card">
       <p className="section-kicker">参与概览</p>
       <div className="stats-grid">
-        <Stat value={stats.participants} label="参与人数" />
+        <Stat value={stats.participants} label={repeatable ? '提交次数' : '参与人数'} />
         <Stat value={stats.unique} label="不同答案" />
       </div>
 

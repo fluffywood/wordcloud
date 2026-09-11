@@ -1,7 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import cloud from 'd3-cloud'
 
-const COLORS = ['#fb7185', '#a78bfa', '#38bdf8', '#2dd4bf', '#fbbf24', '#818cf8', '#f472b6']
+const COLORS = [
+  '#5683E9',
+  '#6587CA',
+  '#6DC7E2',
+  '#8D69CE',
+  '#DA7877',
+  '#E5AD5F',
+  '#ECD47A'
+];
 
 function seededRandom(seed) {
   let value = seed || 1

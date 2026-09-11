@@ -94,7 +94,11 @@ export default function HostView({ livePoll }) {
 
           <div className="host-sidebar">
             <QrPanel joinUrl={joinUrl} />
-            <StatsDashboard stats={stats} topAnswers={aggregates.slice(0, 4)} />
+            <StatsDashboard
+              repeatable={Boolean(question?.allowRepeatResponses)}
+              stats={stats}
+              topAnswers={aggregates.slice(0, 4)}
+            />
           </div>
         </section>
       </main>

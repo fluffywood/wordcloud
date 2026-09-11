@@ -10,6 +10,7 @@ import {
   POLL_OPTIONS,
   POLL_QUESTION,
   POLL_VERSION,
+  getPollConfig,
 } from '../src/config/pollConfig.js'
 import { aggregateAnswers } from '../src/lib/aggregateAnswers.js'
 import { countGraphemes } from '../src/lib/text.js'
@@ -23,7 +24,7 @@ const adminKey = 'wordflow-smoke-test-key'
 let serverProcess
 let serverOutput = ''
 
-function startServer() {
+function startServer(pollVariant = 'a') {
   const child = spawn(process.execPath, ['server.mjs'], {
     cwd: root,
     env: {
@@ -31,6 +32,7 @@ function startServer() {
       ADMIN_KEY: adminKey,
       HOST: '127.0.0.1',
       NODE_ENV: 'production',
+      POLL_VARIANT: pollVariant,
       PORT: String(port),
       PUBLIC_URL: origin,
       WORDCLOUD_DATA_FILE: dataFile,
@@ -137,6 +139,9 @@ try {
   const joinPage = await fetch(`${origin}/join`)
   assert.equal(joinPage.status, 200)
   assert.match(await joinPage.text(), /id="root"/)
+  const moderationPage = await fetch(`${origin}/moderate`)
+  assert.equal(moderationPage.status, 200)
+  assert.match(await moderationPage.text(), /id="root"/)
 
   const malformed = await rawHttp(`GET http://[ HTTP/1.1\r\nHost: 127.0.0.1:${port}\r\nConnection: close\r\n\r\n`)
   assert.match(malformed, /HTTP\/1\.1 400/)
@@ -209,6 +214,36 @@ try {
   assert.equal(duplicate.response.status, 409)
   assert.equal(duplicate.payload.code, 'ALREADY_SUBMITTED')
 
+  const unauthorizedModeration = await api('/api/admin/responses')
+  assert.equal(unauthorizedModeration.response.status, 401)
+
+  const moderationHeaders = { 'X-Admin-Key': adminKey }
+  const moderationList = await api('/api/admin/responses', { headers: moderationHeaders })
+  assert.equal(moderationList.response.status, 200)
+  assert.equal(moderationList.payload.counts.active, 2)
+  assert.equal(moderationList.payload.responses.length, 2)
+
+  const hidden = await api(`/api/admin/responses/${submitted.payload.response.id}`, {
+    method: 'PATCH',
+    headers: moderationHeaders,
+    body: JSON.stringify({ hidden: true }),
+  })
+  assert.equal(hidden.response.status, 200)
+  assert.equal(hidden.payload.counts.active, 1)
+  assert.equal(hidden.payload.counts.hidden, 1)
+  const hiddenPublicState = await api('/api/state?sessionId=person-a')
+  assert.equal(hiddenPublicState.payload.responses.length, 1)
+  assert.equal(hiddenPublicState.payload.ownResponse, null)
+
+  const restored = await api(`/api/admin/responses/${submitted.payload.response.id}`, {
+    method: 'PATCH',
+    headers: moderationHeaders,
+    body: JSON.stringify({ hidden: false }),
+  })
+  assert.equal(restored.response.status, 200)
+  assert.equal(restored.payload.counts.active, 2)
+  assert.equal(restored.payload.counts.hidden, 0)
+
   const lockedQuestion = await api('/api/question', {
     method: 'PUT',
     headers: { 'X-Admin-Key': adminKey },
@@ -229,6 +264,14 @@ try {
   assert.equal(persistedFile.version, POLL_VERSION)
   assert.ok(Array.isArray(persistedFile.responses[0].answers))
 
+  const permanentlyDeleted = await api(`/api/admin/responses/${persisted.payload.responses[0].id}`, {
+    method: 'DELETE',
+    headers: moderationHeaders,
+  })
+  assert.equal(permanentlyDeleted.response.status, 200)
+  assert.equal(permanentlyDeleted.payload.counts.total, 1)
+  assert.equal((await api('/api/state')).payload.responses.length, 1)
+
   const unauthorizedClear = await api('/api/responses', { method: 'DELETE' })
   assert.equal(unauthorizedClear.response.status, 401)
   const cleared = await api('/api/responses', {
@@ -237,6 +280,46 @@ try {
   })
   assert.equal(cleared.response.status, 200)
   assert.deepEqual(cleared.payload.responses, [])
+
+  await stopServer()
+  serverOutput = ''
+  serverProcess = startServer('b')
+  await waitForServer()
+
+  const variantB = getPollConfig('b')
+  const bInitial = await api('/api/state?sessionId=repeat-person')
+  assert.equal(bInitial.payload.question.text, variantB.question)
+  assert.deepEqual(bInitial.payload.question.options, variantB.options)
+  assert.equal(bInitial.payload.question.type, 'single-choice')
+  assert.equal(bInitial.payload.question.otherMaxLength, null)
+  assert.equal(bInitial.payload.question.allowRepeatResponses, true)
+
+  const bMultiple = await api('/api/responses', submission(
+    bInitial.payload.question.id,
+    'invalid-multiple-person',
+    ['坡比想象中多', '活动可以有这么多'],
+  ))
+  assert.equal(bMultiple.response.status, 400)
+
+  const bFirst = await api('/api/responses', submission(
+    bInitial.payload.question.id,
+    'repeat-person',
+    [OTHER_OPTION],
+    '这是一条明显超过六个字的自定义答案',
+  ))
+  assert.equal(bFirst.response.status, 201)
+
+  const bSecond = await api('/api/responses', submission(
+    bInitial.payload.question.id,
+    'repeat-person',
+    ['活动可以有这么多'],
+  ))
+  assert.equal(bSecond.response.status, 201)
+  assert.equal(bSecond.payload.state.responses.length, 2)
+  assert.deepEqual(
+    bSecond.payload.state.ownResponse.answers.map(({ text }) => text),
+    ['活动可以有这么多'],
+  )
 
   console.log('✓ fixed CityU question and exact multi-choice options')
   console.log('✓ production host and participant pages')
@@ -247,6 +330,8 @@ try {
   console.log('✓ live SSE state delivery and per-answer aggregation')
   console.log('✓ six-grapheme custom answer and emoji-safe counting')
   console.log('✓ JSON persistence across restart and protected clearing')
+  console.log('✓ private moderation list, hide, restore, and permanent delete')
+  console.log('✓ variant B single choice, unlimited custom text, and repeat submissions')
 } finally {
   await stopServer().catch(() => {})
   await fs.rm(temporaryDirectory, { recursive: true, force: true })

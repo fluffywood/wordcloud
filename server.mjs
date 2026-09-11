@@ -1,16 +1,12 @@
 import { createServer } from 'node:http'
-import { randomBytes, randomUUID } from 'node:crypto'
+import { randomBytes, randomUUID, timingSafeEqual } from 'node:crypto'
 import { promises as fs } from 'node:fs'
 import { networkInterfaces } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
-  OTHER_MAX_LENGTH,
   OTHER_OPTION,
-  POLL_OPTIONS,
-  POLL_QUESTION,
-  POLL_VERSION,
-  PRESET_OPTIONS,
+  getPollConfig,
 } from './src/config/pollConfig.js'
 import {
   cleanAnswerText,
@@ -39,6 +35,18 @@ async function loadEnvironmentFile() {
 }
 
 await loadEnvironmentFile()
+
+const {
+  otherMaxLength: OTHER_MAX_LENGTH,
+  options: POLL_OPTIONS,
+  presetOptions: PRESET_OPTIONS,
+  question: POLL_QUESTION,
+  selectionMode: POLL_SELECTION_MODE,
+  variant: POLL_VARIANT,
+  version: POLL_VERSION,
+} = getPollConfig(process.env.POLL_VARIANT)
+const ALLOW_REPEAT_RESPONSES = POLL_VARIANT === 'b'
+const MAX_SELECTED_OPTIONS = POLL_SELECTION_MODE === 'single' ? 1 : POLL_OPTIONS.length
 
 const isProduction = process.env.NODE_ENV === 'production'
 const requestedPort = Number.parseInt(process.env.PORT || '5173', 10)
@@ -148,6 +156,8 @@ async function loadState() {
           answers,
           sessionId: response.sessionId,
           createdAt: response.createdAt || new Date().toISOString(),
+          hidden: response.hidden === true,
+          moderatedAt: typeof response.moderatedAt === 'string' ? response.moderatedAt : null,
         }
       })
       .filter((response) => response.answers.length > 0)
@@ -161,7 +171,7 @@ async function loadState() {
         text: POLL_QUESTION,
         updatedAt: questionChanged ? new Date().toISOString() : parsed.question.updatedAt || new Date().toISOString(),
       },
-      responses,
+      responses: questionChanged ? [] : responses,
     }
   } catch (error) {
     if (error.code !== 'ENOENT') {
@@ -240,18 +250,21 @@ function getJoinUrl(request) {
 }
 
 function publicState(request, sessionId = '') {
+  const visibleResponses = state.responses.filter((response) => !response.hidden)
   const ownResponse = sessionId
-    ? state.responses.find((response) => response.sessionId === sessionId)
+    ? visibleResponses.findLast((response) => response.sessionId === sessionId)
     : null
   return {
     question: {
       ...state.question,
-      type: 'multiple-choice',
+      type: POLL_SELECTION_MODE === 'single' ? 'single-choice' : 'multiple-choice',
+      variant: POLL_VARIANT,
       options: POLL_OPTIONS,
       allowOther: true,
+      allowRepeatResponses: ALLOW_REPEAT_RESPONSES,
       otherMaxLength: OTHER_MAX_LENGTH,
     },
-    responses: state.responses.map((response) => ({
+    responses: visibleResponses.map((response) => ({
       id: response.id,
       answers: response.answers,
       createdAt: response.createdAt,
@@ -260,6 +273,31 @@ function publicState(request, sessionId = '') {
       ? { id: ownResponse.id, answers: ownResponse.answers, createdAt: ownResponse.createdAt }
       : null,
     joinUrl: getJoinUrl(request),
+  }
+}
+
+function moderationState() {
+  const responses = state.responses.map((response) => ({
+    id: response.id,
+    answers: response.answers,
+    createdAt: response.createdAt,
+    hidden: response.hidden === true,
+    moderatedAt: response.moderatedAt || null,
+  }))
+  const hidden = responses.filter((response) => response.hidden).length
+
+  return {
+    question: {
+      id: state.question.id,
+      text: state.question.text,
+      variant: POLL_VARIANT,
+    },
+    counts: {
+      active: responses.length - hidden,
+      hidden,
+      total: responses.length,
+    },
+    responses,
   }
 }
 
@@ -283,8 +321,9 @@ function parseSelectedAnswers(body) {
   if (!Array.isArray(body.selectedOptions)) {
     throw apiError('答案选项格式不正确', 400, 'INVALID_OPTIONS')
   }
-  if (body.selectedOptions.length < 1 || body.selectedOptions.length > POLL_OPTIONS.length) {
-    throw apiError('请至少选择一个选项', 400, 'INVALID_OPTIONS')
+  if (body.selectedOptions.length < 1 || body.selectedOptions.length > MAX_SELECTED_OPTIONS) {
+    const message = MAX_SELECTED_OPTIONS === 1 ? '这道题只能选择一个选项' : '请至少选择一个选项'
+    throw apiError(message, 400, 'INVALID_OPTIONS')
   }
   if (body.selectedOptions.some((option) => typeof option !== 'string')) {
     throw apiError('答案选项格式不正确', 400, 'INVALID_OPTIONS')
@@ -312,10 +351,13 @@ function parseSelectedAnswers(body) {
     const otherLength = countGraphemes(otherText)
     if (
       otherLength < 1
-      || otherLength > OTHER_MAX_LENGTH
+      || (Number.isInteger(OTHER_MAX_LENGTH) && otherLength > OTHER_MAX_LENGTH)
       || hasUnsafeInvisibleCharacters(rawOtherText)
     ) {
-      throw apiError(`“其他”请输入 1–${OTHER_MAX_LENGTH} 个字`, 400, 'INVALID_OTHER')
+      const lengthHint = Number.isInteger(OTHER_MAX_LENGTH)
+        ? `请输入 1–${OTHER_MAX_LENGTH} 个字`
+        : '不能为空或包含不可见字符'
+      throw apiError(`“其他”${lengthHint}`, 400, 'INVALID_OTHER')
     }
     if (otherText === OTHER_OPTION || normalizedPresetSet.has(normalizeAnswer(otherText))) {
       throw apiError('该词已有现成选项，请直接选择', 400, 'DUPLICATE_OTHER')
@@ -352,7 +394,11 @@ async function readJson(request) {
 }
 
 function isAdmin(request) {
-  return request.headers['x-admin-key'] === adminKey
+  const providedKey = request.headers['x-admin-key']
+  if (typeof providedKey !== 'string') return false
+  const expected = Buffer.from(adminKey)
+  const provided = Buffer.from(providedKey)
+  return expected.length === provided.length && timingSafeEqual(expected, provided)
 }
 
 function sendSse(client) {
@@ -371,7 +417,70 @@ function broadcastState() {
 
 async function handleApi(request, response, url) {
   if (request.method === 'GET' && url.pathname === '/api/health') {
-    json(response, 200, { ok: true, responses: state.responses.length })
+    json(response, 200, { ok: true, responses: state.responses.filter((item) => !item.hidden).length })
+    return true
+  }
+
+  if (request.method === 'GET' && url.pathname === '/api/admin/responses') {
+    if (!isAdmin(request)) {
+      json(response, 401, { error: '管理员密钥不正确' })
+      return true
+    }
+    json(response, 200, moderationState())
+    return true
+  }
+
+  const moderationMatch = url.pathname.match(/^\/api\/admin\/responses\/([^/]+)$/)
+  if (moderationMatch && ['PATCH', 'DELETE'].includes(request.method)) {
+    if (!isAdmin(request)) {
+      json(response, 401, { error: '管理员密钥不正确' })
+      return true
+    }
+
+    const responseId = moderationMatch[1]
+    if (request.method === 'PATCH') {
+      const body = await readJson(request)
+      if (typeof body.hidden !== 'boolean') {
+        json(response, 400, { error: '屏蔽状态格式不正确' })
+        return true
+      }
+      await commitState((currentState) => {
+        let found = false
+        const responses = currentState.responses.map((item) => {
+          if (item.id !== responseId) return item
+          found = true
+          if (
+            !body.hidden
+            && !ALLOW_REPEAT_RESPONSES
+            && currentState.responses.some((other) => (
+              other.id !== item.id
+              && other.sessionId === item.sessionId
+              && !other.hidden
+            ))
+          ) {
+            throw apiError('该参与者已经有另一条正常显示的回答', 409, 'PARTICIPANT_ALREADY_ACTIVE')
+          }
+          return {
+            ...item,
+            hidden: body.hidden,
+            moderatedAt: new Date().toISOString(),
+          }
+        })
+        if (!found) throw apiError('找不到这条回答', 404, 'RESPONSE_NOT_FOUND')
+        return { ...currentState, responses }
+      })
+      json(response, 200, moderationState())
+      return true
+    }
+
+    await commitState((currentState) => {
+      const responses = currentState.responses.filter((item) => item.id !== responseId)
+      if (responses.length === currentState.responses.length) {
+        throw apiError('找不到这条回答', 404, 'RESPONSE_NOT_FOUND')
+      }
+      return { ...currentState, responses }
+    })
+    json(response, 200, moderationState())
     return true
   }
 
@@ -422,7 +531,12 @@ async function handleApi(request, response, url) {
         if (!questionId || questionId !== currentState.question.id) {
           throw apiError('问题刚刚更新了，请重新查看后再回答', 409, 'QUESTION_CHANGED')
         }
-        if (currentState.responses.some((responseItem) => responseItem.sessionId === sessionId)) {
+        if (
+          !ALLOW_REPEAT_RESPONSES
+          && currentState.responses.some((responseItem) => (
+            responseItem.sessionId === sessionId && !responseItem.hidden
+          ))
+        ) {
           throw apiError('你已经回答过这道题了', 409, 'ALREADY_SUBMITTED')
         }
         if (currentState.responses.length >= MAX_RESPONSES) {
@@ -583,9 +697,14 @@ server.listen(port, host, () => {
     : lanAddress
       ? `http://${lanAddress}:${port}/join`
       : `http://localhost:${port}/join`
+  const moderationOrigin = publicUrl
+    || (lanAddress ? `http://${lanAddress}:${port}` : `http://localhost:${port}`)
+  const moderationUrl = `${moderationOrigin}/moderate?admin=${encodeURIComponent(adminKey)}`
   console.log(`\n  WordFlow 已启动`)
+  console.log(`  活动配置: ${POLL_VARIANT.toUpperCase()} · ${POLL_QUESTION}`)
   console.log(`  主持人大屏: ${hostOrigin}/?admin=${encodeURIComponent(adminKey)}`)
   console.log(`  手机参与页: ${participantUrl}`)
+  console.log(`  手机审核页（仅管理员）: ${moderationUrl}`)
   if (adminCredentials.generated) console.log(`  主持人密钥已自动生成并保存在 ${path.join(path.dirname(dataFile), '.admin-key')}`)
   console.log(`  数据文件: ${dataFile}\n`)
 })

@@ -8,8 +8,8 @@ dist/
 build/
 
 # Local poll data (created automatically)
-data/*.json
-data/*.tmp
+data/**/*.json
+data/**/*.tmp
 **/.admin-key
 
 # Environment variables (contains secrets)

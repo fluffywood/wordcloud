@@ -28,7 +28,7 @@ export default function QrPanel({ joinUrl }) {
             size={244}
             level="M"
             marginSize={1}
-            bgColor="#ffffff"
+            bgColor="transparent"
             fgColor="#111827"
             title="手机参与二维码"
           />
